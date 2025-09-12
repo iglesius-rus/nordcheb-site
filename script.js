@@ -1,6 +1,7 @@
 function showSection(id) {
   document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
 }
 
 document.getElementById('theme-toggle').addEventListener('click', () => {

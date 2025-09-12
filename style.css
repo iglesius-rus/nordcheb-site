@@ -28,7 +28,7 @@ header {
 }
 
 .logo {
-  height: 150px; /* было 50px, стало в 3 раза больше */
+  height: 150px; /* увеличен в 3 раза */
   object-fit: contain;
 }
 
@@ -66,6 +66,7 @@ header {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Контакты */
 .contacts a {
   text-decoration: underline;
 }
