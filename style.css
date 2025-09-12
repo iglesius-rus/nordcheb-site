@@ -3,10 +3,45 @@ body {font-family: Arial, sans-serif; margin:0; padding:0; background:var(--bg);
 body.dark {--bg:#1a1a1a;--text:#f5f5f5;--header:#1e1e1e;}
 header {background:var(--header); padding:10px; display:flex; justify-content:space-between; align-items:center;}
 .logo {height:80px; object-fit:contain;}
-#theme-toggle {padding:5px 10px; font-size:16px; cursor:pointer;}
-.menu-btn {display:block; width:90%; margin:10px auto; padding:15px; font-size:18px; border:none; border-radius:10px; cursor:pointer; color:white; background:linear-gradient(90deg,#ff4500,#1e90ff);}
-.content-section {display:none; padding:20px; animation:fadeIn 0.5s ease-in-out;}
-.content-section.active {display:block;}
-@keyframes fadeIn {from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.contacts a {text-decoration:underline;}
+#theme-toggle {padding:6px 10px; font-size:16px; cursor:pointer; border-radius:10px; border:1px solid #0001;}
+body.dark #theme-toggle {border-color:#fff2;}
+
+.accordion {padding: 0 8px 24px;}
+.acc-item {margin: 12px auto; max-width: 900px;}
+
+.menu-btn {display:block; width:100%; padding:14px 16px; font-size:18px; border:none; border-radius:12px; cursor:pointer; color:#fff; background:linear-gradient(90deg,#ff4500,#1e90ff); text-align:left; box-shadow:0 2px 8px #0002;}
+.menu-btn:hover {filter:brightness(1.03);}
+.menu-btn.active {outline:2px solid #ffffff55; box-shadow:0 4px 14px #0003;}
+
+.content-section {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease, padding 0.2s ease;
+  padding: 0 16px;
+  border-left: 1px solid #0001;
+  border-right: 1px solid #0001;
+  border-bottom: 1px solid #0001;
+  border-radius: 0 0 12px 12px;
+  background: #fff;
+  scroll-margin-top: 90px; /* удобная прокрутка под хедер */
+}
+body.dark .content-section {background:#151515; border-color:#fff1;}
+.content-section.open {
+  opacity: 1;
+  transform: translateY(0);
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+h2 {margin-top:0}
+ul {padding-left: 20px;}
+.tags span{font-size:12px; opacity:.8;}
+
+.contacts a {text-decoration: underline;}
 body.dark .contacts a {color:#1e90ff;}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
