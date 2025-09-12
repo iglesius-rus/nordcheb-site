@@ -3,7 +3,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   document.body.classList.toggle('dark');
   try { localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); } catch(e){}
 });
-// Восстановить тему
+// Восстановление темы
 try { const savedTheme = localStorage.getItem('theme'); if (savedTheme === 'light') document.body.classList.remove('dark'); } catch(e){}
 
 // Аккордеон
