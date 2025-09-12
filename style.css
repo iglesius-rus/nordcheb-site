@@ -67,13 +67,9 @@ header {
 
 /* Контакты */
 .contacts a {
-  background: linear-gradient(90deg, #ff4500, #1e90ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
-.contacts a:hover {
-  opacity: 0.8;
+body.dark .contacts a {
+  color: #1e90ff;
 }
