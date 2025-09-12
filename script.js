@@ -1,12 +1,14 @@
-function toggleBlock(id) {
-    const block = document.getElementById(id);
-    block.style.display = block.style.display === "block" ? "none" : "block";
+function showSection(id) {
+  const sections = document.querySelectorAll('.content');
+  sections.forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
 const themeToggle = document.getElementById('theme-toggle');
-const body = document.body;
-
 themeToggle.addEventListener('click', () => {
-    body.classList.toggle('light');
-    body.classList.toggle('dark');
+  document.body.classList.toggle('dark');
+  document.body.classList.toggle('light');
 });
+
+// По умолчанию показываем "Обслуживание"
+document.getElementById('service').classList.add('active');
