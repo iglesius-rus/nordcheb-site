@@ -1,8 +1,12 @@
-function showSection(id) {
-  document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+function toggleBlock(id) {
+    const block = document.getElementById(id);
+    block.style.display = block.style.display === "block" ? "none" : "block";
 }
 
-document.getElementById('theme-toggle').addEventListener('click', () => {
-  document.body.classList.toggle('dark');
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+
+themeToggle.addEventListener('click', () => {
+    body.classList.toggle('light');
+    body.classList.toggle('dark');
 });
