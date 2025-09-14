@@ -5,7 +5,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
 });
 try { const savedTheme = localStorage.getItem('theme'); if (savedTheme === 'light') document.body.classList.remove('dark'); } catch(e){}
 
-// Аккордеон
+/* Аккордеон */
 function setMaxHeight(el, open) { if (open) el.style.maxHeight = el.scrollHeight + 'px'; else el.style.maxHeight = '0px'; }
 function scrollToPanel(panel){ panel.scrollIntoView({ behavior:'smooth', block:'start' }); }
 function saveState(){ try { const openIds = Array.from(document.querySelectorAll('.content-section.open')).map(p => p.id); localStorage.setItem('openPanels', JSON.stringify(openIds)); } catch(e){} }

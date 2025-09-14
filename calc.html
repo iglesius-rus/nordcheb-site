@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Калькулятор работ — Nord Чеб</title>
-  <link rel="stylesheet" href="style.css?v22">
+  <link rel="stylesheet" href="style.css?v23">
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="dark">
@@ -50,10 +50,11 @@
   </main>
 
   <footer style="padding:16px;opacity:.7;font-size:12px; text-align:center;">
-    Версия сборки: v22 • 2025-09-14 10:40:42 (MSK)
+    Версия сборки: v23 • 2025-09-14 10:48:44 (MSK)
   </footer>
 
   <script>
+  // Доступ по спец-параметру
   (function(){
     const params = new URLSearchParams(location.search);
     try {
@@ -65,9 +66,10 @@
   })();
   </script>
 
-  <script src="script.js?v22"></script>
+  <script src="script.js?v23"></script>
 
   <script>
+  // Данные
   const MAIN = [
     { name:'Стандартный монтаж настенного кондиционера 07–09 (до 3 м магистрали)', unit:'за комплект', price:13000 },
     { name:'Стандартный монтаж настенного кондиционера 12 (до 3 м магистрали)', unit:'за комплект', price:14000 },
@@ -108,21 +110,23 @@
   ];
 
   function format(n) { return n.toLocaleString('ru-RU'); }
+
+  function rowHTML(r, idx) {
+    return `
+      <tr>
+        <td data-label="Наименование работ">${r.name}</td>
+        <td data-label="Кол-во"><input type="number" min="0" step="1" value="0" data-index="${idx}"></td>
+        <td data-label="Ед. изм.">${r.unit}</td>
+        <td class="price" data-label="Цена ед.">${format(r.price)} ₽</td>
+        <td class="sum" data-sum="0" data-label="Цена">0 ₽</td>
+      </tr>`;
+  }
+
   function buildTable(id, rows) {
     const tbody = document.querySelector(id + ' tbody');
-    tbody.innerHTML = '';
-    rows.forEach((r, idx) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${r.name}</td>
-        <td><input type="number" min="0" step="1" value="0" data-index="${idx}"></td>
-        <td>${r.unit}</td>
-        <td class="price">${format(r.price)} ₽</td>
-        <td class="sum" data-sum="0">0 ₽</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    tbody.innerHTML = rows.map((r,i) => rowHTML(r,i)).join('');
   }
+
   function recalc() {
     let total = 0;
     document.querySelectorAll('#table-main tbody tr').forEach((tr, i) => {
@@ -141,9 +145,13 @@
     });
     document.getElementById('grand-total').textContent = format(total);
   }
+
   function wire() {
-    document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => { inp.addEventListener('input', recalc); });
+    document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => {
+      inp.addEventListener('input', recalc);
+    });
   }
+
   buildTable('#table-main', MAIN);
   buildTable('#table-extra', EXTRA);
   wire();
