@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Калькулятор работ — Nord Чеб</title>
-  <link rel="stylesheet" href="style.css?v23">
+  <link rel="stylesheet" href="style.css?v24">
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="dark">
@@ -15,15 +15,15 @@
 
   <main>
     <div class="container" id="guard" style="text-align:center;">
-      <h2>Страница не найдена</h2>
-      <p class="calc-note">Перейдите по спец‑ссылке, чтобы открыть калькулятор.</p>
+      <h2>Страница недоступна</h2>
+      <p class="calc-note">Используйте служебную ссылку, чтобы открыть калькулятор.</p>
     </div>
 
     <div class="container hidden" id="calc-app">
-      <h1 style="margin:0 0 8px;">Калькулятор расчёта работ по установке кондиционеров</h1>
+      <h1 style="margin:0 0 8px;">Калькулятор стоимости работ</h1>
       <div class="badge">для внутреннего использования</div>
 
-      <div class="section-title">Основные работы по установке кондиционеров:</div>
+      <div class="section-title">Основные работы</div>
       <table class="calc-table" id="table-main">
         <thead>
           <tr><th>Наименование работ</th><th>Кол-во</th><th>Ед. изм.</th><th>Цена ед.</th><th>Цена</th></tr>
@@ -31,7 +31,7 @@
         <tbody></tbody>
       </table>
 
-      <div class="section-title">Дополнительные работы по установке кондиционеров:</div>
+      <div class="section-title">Дополнительные работы</div>
       <table class="calc-table" id="table-extra">
         <thead>
           <tr><th>Наименование работ</th><th>Кол-во</th><th>Ед. изм.</th><th>Цена ед.</th><th>Цена</th></tr>
@@ -39,22 +39,21 @@
         <tbody></tbody>
       </table>
 
-      <div class="total-line"><b>Всего:</b> <span id="grand-total">0</span> ₽</div>
+      <div class="total-line"><b>Итого:</b> <span id="grand-total">0</span> ₽</div>
 
       <p class="calc-note">
-        * Срочный выезд +50%<br>
-        ** Высотные работы на улице выше 1,8 м — 1000 руб.<br>
-        *** Установка козырька — 1500 руб.
+        * Срочный выезд: +50% к стоимости работ.<br>
+        ** Высотные работы на улице выше 1,8&nbsp;м — 1&nbsp;000&nbsp;руб.<br>
+        *** Установка козырька — 1&nbsp;500&nbsp;руб.
       </p>
     </div>
   </main>
 
   <footer style="padding:16px;opacity:.7;font-size:12px; text-align:center;">
-    Версия сборки: v23 • 2025-09-14 10:48:44 (MSK)
+    Версия сборки: v24 • 2025-09-14 10:57:56 (MSK)
   </footer>
 
   <script>
-  // Доступ по спец-параметру
   (function(){
     const params = new URLSearchParams(location.search);
     try {
@@ -66,17 +65,16 @@
   })();
   </script>
 
-  <script src="script.js?v23"></script>
+  <script src="script.js?v24"></script>
 
   <script>
-  // Данные
+  // Основные позиции: 07–09, 12, 18 (24 и выше убраны по просьбе заказчика)
   const MAIN = [
-    { name:'Стандартный монтаж настенного кондиционера 07–09 (до 3 м магистрали)', unit:'за комплект', price:13000 },
-    { name:'Стандартный монтаж настенного кондиционера 12 (до 3 м магистрали)', unit:'за комплект', price:14000 },
-    { name:'Стандартный монтаж настенного кондиционера 18 (до 3 м магистрали)', unit:'за комплект', price:16000 },
-    { name:'Стандартный монтаж настенного кондиционера 24 (до 3 м магистрали)', unit:'за комплект', price:18000 },
-    { name:'Стандартный монтаж настенного кондиционера 28–32 (до 3 м магистрали)', unit:'за комплект', price:21000 },
+    { name:'Стандартный монтаж настенного кондиционера 07–09 (до 3 м магистрали)', unit:'компл.', price:13000 },
+    { name:'Стандартный монтаж настенного кондиционера 12 (до 3 м магистрали)', unit:'компл.', price:14000 },
+    { name:'Стандартный монтаж настенного кондиционера 18 (до 3 м магистрали)', unit:'компл.', price:16000 }
   ];
+
   const EXTRA = [
     { name:'Прокладка дополнительной трассы 07–09', unit:'м.п.', price:1500 },
     { name:'Прокладка дополнительной трассы 12–18', unit:'м.п.', price:1700 },
@@ -84,16 +82,16 @@
     { name:'Штроба в монолите, высокоармированном бетоне', unit:'м.п.', price:2500 },
     { name:'Штроба, в силикатном кирпиче', unit:'м.п.', price:1500 },
     { name:'Штроба под дренаж', unit:'м.п.', price:600 },
-    { name:'Пробивка доп. отверстия для трассы (ГКЛ и т.п., Ø до 60 мм)', unit:'отв.', price:500 },
+    { name:'Пробивка доп. отверстия (ГКЛ и т.п., Ø до 60 мм)', unit:'отв.', price:500 },
     { name:'Установка помпы насоса', unit:'шт.', price:2000 },
-    { name:'Пробивка доп. отверстия для трассы (бетон, Ø 52 мм)', unit:'отв.', price:2000 },
-    { name:'Пробивка доп. отверстия для трассы (кирпич, Ø 52 мм)', unit:'отв.', price:1000 },
+    { name:'Пробивка доп. отверстия (бетон, Ø 52 мм)', unit:'отв.', price:2000 },
+    { name:'Пробивка доп. отверстия (кирпич, Ø 52 мм)', unit:'отв.', price:1000 },
     { name:'Демонтаж кондиционера 07–12', unit:'шт.', price:2000 },
     { name:'Демонтаж кондиционера 18–24', unit:'шт.', price:4000 },
     { name:'Демонтаж внутреннего/наружного блока (за каждый)', unit:'блок', price:3000 },
     { name:'Монтаж внутреннего блока 07–12 (пуско-наладка)', unit:'блок', price:3500 },
     { name:'Работа альпиниста', unit:'услуга', price:5500 },
-    { name:'Монтаж наружного блока на вентилируемый фасад (сайдинг, плитка, шифер) доп.', unit:'услуга', price:3500 },
+    { name:'Монтаж наружного блока на вентилируемый фасад', unit:'услуга', price:3500 },
     { name:'Монтаж дополнительного дренажа без короба', unit:'м.п.', price:150 },
     { name:'Разборка/сборка подвесного потолка', unit:'м.п.', price:200 },
     { name:'Пайка фреоновых труб (за каждую)', unit:'пайка', price:500 },
@@ -106,7 +104,7 @@
     { name:'Установка зимнего комплекта', unit:'шт.', price:3000 },
     { name:'Доп. кабель‑канал', unit:'м.', price:500 },
     { name:'Разборка стеклопакета', unit:'шт.', price:1000 },
-    { name:'Выезд за пределы города (в обе стороны, от г. Чебоксары)', unit:'км.', price:30 },
+    { name:'Выезд за пределы города (в обе стороны, от г. Чебоксары)', unit:'км.', price:30 }
   ];
 
   function format(n) { return n.toLocaleString('ru-RU'); }
@@ -147,9 +145,7 @@
   }
 
   function wire() {
-    document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => {
-      inp.addEventListener('input', recalc);
-    });
+    document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => { inp.addEventListener('input', recalc); });
   }
 
   buildTable('#table-main', MAIN);

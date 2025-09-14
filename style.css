@@ -17,7 +17,7 @@ body.dark #theme-toggle {border:1px solid #fff3; color:#f5f5f5;}
 .accordion {padding: 8px 10px 24px;}
 .acc-item {margin: 12px auto; max-width: 980px;}
 
-/* Кнопки-аккордеон — крупные для тача */
+/* Кнопки-аккордеон */
 .menu-btn {display:block; width:100%; padding:16px; font-size:18px; border:none; border-radius:14px; cursor:pointer; color:#fff; background:linear-gradient(90deg,#ff4500,#1e90ff); text-align:left; box-shadow:0 2px 8px #0002; min-height:56px;}
 .menu-btn:active {transform: translateY(1px);}
 .menu-btn.active {outline:2px solid #ffffff55; box-shadow:0 4px 14px #0003;}
@@ -36,12 +36,12 @@ p, li {font-size: clamp(15px, 3.6vw, 18px);}
 .contacts a {text-decoration: underline;}
 body.dark .contacts a {color:#1e90ff;}
 
-/* Контейнеры (в т.ч. на calc.html) */
+/* Контейнеры */
 .container {max-width: 980px; margin: 12px auto 24px; padding: 16px; background:#fff; border-radius: 14px; border:1px solid #0001;}
 body.dark .container {background:#151515; border-color:#fff1;}
 .kicker {font-size:13px; opacity:.8;}
 
-/* ==== Калькулятор: таблица -> карточки на мобиле ==== */
+/* Калькулятор */
 .calc-note {font-size:12px; opacity:.75; margin-top:8px;}
 .calc-table {width:100%; border-collapse: collapse; margin-top:10px;}
 .calc-table th, .calc-table td {border-bottom:1px solid #0001; padding:10px;}
@@ -62,7 +62,6 @@ body.dark .badge {background:#0f1a24; color:#e7f3ff;}
   .container {margin:10px 8px 18px; padding:14px;}
   .total-line {font-size:18px;}
 
-  /* Таблицы -> карточки */
   .calc-table thead {display:none;}
   .calc-table, .calc-table tbody, .calc-table tr, .calc-table td {display:block; width:100%;}
   .calc-table tbody tr {border:1px solid #0001; border-radius:12px; padding:8px 10px; margin-bottom:10px; background:inherit;}
