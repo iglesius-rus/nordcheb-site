@@ -3,10 +3,9 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   document.body.classList.toggle('dark');
   try { localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); } catch(e){}
 });
-// Восстановление темы
 try { const savedTheme = localStorage.getItem('theme'); if (savedTheme === 'light') document.body.classList.remove('dark'); } catch(e){}
 
-// Аккордеон
+/* Аккордеон */
 function setMaxHeight(el, open) { if (open) el.style.maxHeight = el.scrollHeight + 'px'; else el.style.maxHeight = '0px'; }
 function scrollToPanel(panel){ panel.scrollIntoView({ behavior:'smooth', block:'start' }); }
 function saveState(){ try { const openIds = Array.from(document.querySelectorAll('.content-section.open')).map(p => p.id); localStorage.setItem('openPanels', JSON.stringify(openIds)); } catch(e){} }
@@ -15,6 +14,7 @@ function restoreState(){ try { const openIds = JSON.parse(localStorage.getItem('
 document.querySelectorAll('.acc-item').forEach(item => {
   const btn = item.querySelector('.menu-btn');
   const panel = item.querySelector('.content-section');
+  if (!btn || !panel) return;
   setMaxHeight(panel, false);
   btn.addEventListener('click', () => {
     const isOpen = panel.classList.toggle('open');
@@ -25,13 +25,9 @@ document.querySelectorAll('.acc-item').forEach(item => {
     if (isOpen) scrollToPanel(panel);
   });
 });
-
-// Адаптация высоты при ресайзе
 window.addEventListener('resize', () => {
   document.querySelectorAll('.content-section.open').forEach(panel => {
     panel.style.maxHeight = panel.scrollHeight + 'px';
   });
 });
-
-// Восстановить открытые панели
 restoreState();
