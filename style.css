@@ -75,3 +75,34 @@ body.dark .badge {background:#0f1a24; color:#e7f3ff;}
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* Поля ввода с белой/чёрной рамкой */
+input[type="number"], input[type="text"], input[type="tel"], input[type="email"] {
+  border: 1.5px solid;
+  border-color: var(--input-border, #000);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: transparent;
+  color: inherit;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+body.dark input[type="number"],
+body.dark input[type="text"],
+body.dark input[type="tel"],
+body.dark input[type="email"] {
+  --input-border: #fff;
+}
+
+body:not(.dark) input[type="number"],
+body:not(.dark) input[type="text"],
+body:not(.dark) input[type="tel"],
+body:not(.dark) input[type="email"] {
+  --input-border: #000;
+}
+
+input:focus {
+  outline: none;
+  border-color: #1e90ff;
+  box-shadow: 0 0 6px #1e90ff55;
+}
