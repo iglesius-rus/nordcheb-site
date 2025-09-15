@@ -56,7 +56,7 @@
 <div id="scrollFab" class="scroll-fab" role="button" aria-label="Прокрутить страницу" title="Вверх">↑</div>
 
 
-  <footer>Версия сборки: nordched_new_v_10 • 2025-09-15 22:06:26 (MSK)</footer>
+  <footer>Версия сборки: nordched_new_v_11 • 2025-09-15 22:11:53 (MSK)</footer>
 
   <script src="script.js?v08"></script>
   <script>
@@ -110,23 +110,24 @@
     const tbody = document.querySelector(id + ' tbody');
     tbody.innerHTML = rows.map((r,i) => rowHTML(r,i)).join('');
   }
-  function recalc() {
+  function recalc(){
     let total = 0;
-    document.querySelectorAll('#table-main tbody tr').forEach((tr, i) => {
-      const qty = parseInt(tr.querySelector('input').value || '0', 10) || 0;
-      const sum = Math.max(0, qty) * MAIN[i].price;
+    // Generic: compute by reading unit price from DOM, not arrays
+    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+      const inp = tr.querySelector('input[type="number"]');
+      if (!inp) return;
+      const qty = parseInt(inp.value || '0', 10) || 0;
+      const priceCell = tr.querySelector('.price');
+      const sumCell = tr.querySelector('.sum');
+      if (!priceCell || !sumCell) return;
+      const unitPrice = parseInt(String(priceCell.textContent).replace(/[^0-9]/g,''),10) || 0;
+      const sum = Math.max(0, qty) * unitPrice;
       total += sum;
-      tr.querySelector('.sum').dataset.sum = sum;
-      tr.querySelector('.sum').textContent = format(sum) + ' ₽';
+      sumCell.dataset.sum = sum;
+      sumCell.textContent = sum.toLocaleString('ru-RU') + ' ₽';
     });
-    document.querySelectorAll('#table-extra tbody tr').forEach((tr, i) => {
-      const qty = parseInt(tr.querySelector('input').value || '0', 10) || 0;
-      const sum = Math.max(0, qty) * EXTRA[i].price;
-      total += sum;
-      tr.querySelector('.sum').dataset.sum = sum;
-      tr.querySelector('.sum').textContent = format(sum) + ' ₽';
-    });
-    document.getElementById('grand-total').textContent = format(total);
+    const grand = document.getElementById('grand-total');
+    if (grand) grand.textContent = total.toLocaleString('ru-RU');
   }
   function wire() {
     document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => {
