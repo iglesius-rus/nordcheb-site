@@ -31,14 +31,3 @@ window.addEventListener('resize', () => {
   });
 });
 restoreState();
-
-
-(() => {
-
-
-
-/* Set logo link to repo root explicitly */
-(() => {
-  const a = document.getElementById('logoLink');
-  if (a) a.href = '/nordcheb-site/';
-})();

@@ -9,11 +9,11 @@
 </head>
 <body class="dark">
   <header>
-    <a href="#" class="logo-link" aria-label="На главную">
-      <a class="logo-link" id="logoLink" href="./"><img src="logo.png" alt="Nord Чеб" class="logo">
+    <a href="/" class="logo-link" aria-label="На главную">
+      <img src="logo.png" alt="Nord Чеб" class="logo">
     </a>
     <button id="theme-toggle" aria-label="Переключить тему">🌙 / ☀️</button>
-  </a></header>
+  </header>
 
   <main>
     <div class="container">
@@ -125,5 +125,13 @@
   wire();
   recalc();
   </script>
+
+<script>(function(){try{
+  var a=document.getElementById('logoLink'); if(!a) return;
+  var parts=location.pathname.split('/').filter(Boolean);
+  var root = parts.length ? '/' + parts[0] + '/' : '/';
+  a.setAttribute('href', root);
+}catch(e){}})();</script>
+
 </body>
 </html>
