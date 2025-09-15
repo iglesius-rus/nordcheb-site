@@ -19,7 +19,7 @@
       <p class="calc-note">Используйте служебную ссылку, чтобы открыть калькулятор.</p>
     </div>
 
-    <div class="container hidden" id="calc-app">
+    <div class="container hidden" id="calc-app" class="hidden">
       <h1 style="margin:0 0 8px;">Калькулятор стоимости работ</h1>
       <div class="badge">для внутреннего использования</div>
 
@@ -46,9 +46,12 @@
   </main>
 
   <footer style="padding:16px;opacity:.7;font-size:12px; text-align:center;">
-    Версия сборки: v35 • 2025-09-15 19:04:57 (MSK)</footer>
+    Версия сборки: v37 • 2025-09-15 19:30:48 (MSK)</footer>
 
   
+
+
+
 
 
 <script>
@@ -162,7 +165,7 @@ function attachPdfHandler(){
     const wrap = document.getElementById('estimate-body');
     const address = document.getElementById('estimate-address')?.value?.trim() || '';
     if (!wrap || !wrap.querySelector('table')) { btn.textContent='Нет данных'; setTimeout(()=>btn.textContent='Скачать PDF', 1200); return; }
-    const inner = wrap.innerHTML.replace(/<\/script>/ig, '<\\/script>'); // escape closing script
+    const inner = wrap.innerHTML.replace(/<\/script>/ig, '<\\/script>');
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Смета</title>
       <style>
         body { font-family: Arial, sans-serif; margin: 24px; }

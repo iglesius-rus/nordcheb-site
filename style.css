@@ -60,10 +60,15 @@ header {
 }
 
 /* Узкие поля количества — 3–4 цифры */
-.calc-table input[type="number"]{
-  width:68px;
-  text-align:center;
-}
+
 @media (max-width: 720px){
-  .calc-table input[type="number"]{ width:60px; }
+  
 }
+
+.hidden{display:none !important;}
+
+/* Narrow quantity inputs (3–4 digits) */
+.calc-table input[type="number"]{width:68px;text-align:center}
+@media (max-width:720px){.calc-table input[type="number"]{width:60px}}
+
+footer{padding:16px;text-align:center;color:var(--text);opacity:.8;font-size:12px}
