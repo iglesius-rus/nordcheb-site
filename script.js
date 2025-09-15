@@ -1,8 +1,150 @@
-function showSection(id) {
-  document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
+// Тема
 document.getElementById('theme-toggle').addEventListener('click', () => {
   document.body.classList.toggle('dark');
+  try { localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); } catch(e){}
 });
+try { const savedTheme = localStorage.getItem('theme'); if (savedTheme === 'light') document.body.classList.remove('dark'); } catch(e){}
+
+/* Аккордеон */
+function setMaxHeight(el, open) { if (open) el.style.maxHeight = el.scrollHeight + 'px'; else el.style.maxHeight = '0px'; }
+function scrollToPanel(panel){ panel.scrollIntoView({ behavior:'smooth', block:'start' }); }
+function saveState(){ try { const openIds = Array.from(document.querySelectorAll('.content-section.open')).map(p => p.id); localStorage.setItem('openPanels', JSON.stringify(openIds)); } catch(e){} }
+function restoreState(){ try { const openIds = JSON.parse(localStorage.getItem('openPanels') || '[]'); openIds.forEach(id => { const panel = document.getElementById(id); const btn = panel?.previousElementSibling; if (panel && btn) { panel.classList.add('open'); setMaxHeight(panel, true); btn.classList.add('active'); btn.setAttribute('aria-expanded', 'true'); } }); } catch(e){} }
+
+document.querySelectorAll('.acc-item').forEach(item => {
+  const btn = item.querySelector('.menu-btn');
+  const panel = item.querySelector('.content-section');
+  if (!btn || !panel) return;
+  setMaxHeight(panel, false);
+  btn.addEventListener('click', () => {
+    const isOpen = panel.classList.toggle('open');
+    btn.classList.toggle('active', isOpen);
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    setMaxHeight(panel, isOpen);
+    try { saveState(); } catch(e) {}
+    if (isOpen) scrollToPanel(panel);
+  });
+});
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.content-section.open').forEach(panel => {
+    panel.style.maxHeight = panel.scrollHeight + 'px';
+  });
+});
+restoreState();
+
+
+// ===== Смета (аккуратно, без PDF) =====
+function _parseMoney(text){ const d = String(text||'').replace(/[^\d]/g,''); return d?parseInt(d,10):0; }
+
+function buildEstimate(){
+  const rows = [];
+  document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+    const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
+    const qty  = parseInt(tr.querySelector('input')?.value || '0', 10) || 0;
+    const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
+    const sum  = _parseMoney(tr.querySelector('.sum')?.textContent);
+    if (qty > 0 && sum > 0) rows.push({name, qty, unitPrice, sum});
+  });
+  const wrap = document.getElementById('estimate-body');
+  if (!wrap) return;
+  if (!rows.length){
+    wrap.innerHTML = '<p class="kicker">Пока ничего не выбрано. Укажите количество и нажмите «Рассчёт».</p>';
+    return;
+  }
+  let total = 0;
+  const items = rows.map(r => { total += r.sum; return (
+    `<tr>
+      <td>${r.name}</td>
+      <td style="text-align:center;">${r.qty}</td>
+      <td style="white-space:nowrap;">${r.unitPrice.toLocaleString('ru-RU')} ₽</td>
+      <td style="white-space:nowrap; text-align:right;"><b>${r.sum.toLocaleString('ru-RU')} ₽</b></td>
+    </tr>`);
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="kicker" style="margin-bottom:8px;">Автосформированный расчёт</div>
+    <div style="overflow:auto;">
+      <table class="calc-table">
+        <thead><tr><th>Позиция</th><th>Кол-во</th><th>Цена ед.</th><th>Сумма</th></tr></thead>
+        <tbody>${items}</tbody>
+      </table>
+    </div>
+    <div class="total-line" style="margin-top:10px;"><b>Итого по смете:</b> ${total.toLocaleString('ru-RU')} ₽</div>`;
+
+  const est = document.getElementById('estimate');
+  if (est) est.classList.remove('hidden');
+}
+
+function estimateToPlainText(){
+  const wrap = document.getElementById('estimate-body');
+  if (!wrap) return '';
+  const rows = [];
+  const table = wrap.querySelector('table');
+  if (!table) return '';
+  table.querySelectorAll('tbody tr').forEach(tr => {
+    const name = tr.children[0]?.textContent.trim() || '';
+    const qty  = tr.children[1]?.textContent.trim() || '';
+    const price= tr.children[2]?.textContent.trim() || '';
+    const sum  = tr.children[3]?.textContent.trim() || '';
+    rows.push(`${name} — ${qty} шт. × ${price} = ${sum}`);
+  });
+  const totalLine = wrap.querySelector('.total-line')?.textContent.replace(/\s+/g,' ').trim() || '';
+  const address = document.getElementById('estimate-address')?.value?.trim();
+  return (rows.join('\n') + (rows.length ? `\n${totalLine}` : '') + (address ? `\nАдрес: ${address}` : '')).trim();
+}
+
+function attachEstimateUI(){
+  const btnEstimate = document.getElementById('btn-estimate');
+  const btnCopy = document.getElementById('btn-copy-estimate');
+  if (btnEstimate){
+    btnEstimate.addEventListener('click', () => { buildEstimate(); });
+  }
+  if (btnCopy){
+    btnCopy.addEventListener('click', async () => {
+      if (!document.querySelector('#estimate-body table')) buildEstimate();
+      const text = estimateToPlainText();
+      if (!text){ btnCopy.textContent='Нет данных'; setTimeout(()=>btnCopy.textContent='Скопировать',1200); return; }
+      try { await navigator.clipboard.writeText(text); btnCopy.textContent='Скопировано ✅'; setTimeout(()=>btnCopy.textContent='Скопировать',1500); }
+      catch(e){
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+        ta.select(); try { document.execCommand('copy'); } catch(e2){} document.body.removeChild(ta);
+        btnCopy.textContent='Скопировано ✅'; setTimeout(()=>btnCopy.textContent='Скопировать',1500);
+      }
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', attachEstimateUI);
+
+
+// ---- Safety: required sections check ----
+(function(){
+  try {
+    const req = ['powercalc','sales','price','reviews','faq','service','recommend','works','contacts'];
+    const missing = req.filter(id => !document.getElementById(id));
+    if (missing.length) {
+      const bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;padding:8px 12px;background:#d32f2f;color:#fff;z-index:9999;text-align:center;font-weight:700';
+      bar.textContent = 'Внимание: не найдены секции: ' + missing.join(', ') + ' — проверьте загрузку файлов.';
+      document.body.appendChild(bar);
+      console.warn('Missing sections:', missing);
+    }
+  } catch(e){}
+})();
+
+// ---- Runtime cache-busting (adds ?v= if отсутствует) ----
+(function(){
+  try {
+    var v = 'v21';
+    document.querySelectorAll('link[rel="stylesheet"][href^="style.css"],script[src^="script.js"]').forEach(function(n){
+      var a = n.tagName === 'LINK' ? 'href' : 'src';
+      if (!n.getAttribute(a).includes('?')) n.setAttribute(a, n.getAttribute(a) + '?' + v);
+    });
+  } catch(e){}
+})();
+
+// ---- Logo link safety (non-GitHub hosts) ----
+(function(){
+  var a = document.getElementById('logoLink');
+  if (!a) return;
+  if (!/\.github\.io$/.test(location.hostname)) a.setAttribute('href','./');
+})();
