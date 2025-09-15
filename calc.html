@@ -10,10 +10,10 @@
 <body class="dark">
   <header>
     <a href="/" class="logo-link" aria-label="На главную">
-      <img src="logo.png" alt="Nord Чеб" class="logo">
+      <a class="logo-link" id="logoLink" href="/nordcheb-site/"><img src="logo.png" alt="Nord Чеб" class="logo">
     </a>
     <button id="theme-toggle" aria-label="Переключить тему">🌙 / ☀️</button>
-  </header>
+  </a></header>
 
   <main>
     <div class="container">
@@ -37,10 +37,22 @@
       </table>
 
       <div class="total-line"><b>Итого:</b> <span id="grand-total">0</span> ₽</div>
+<div class="est-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap;">
+  <button id="btn-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
+  <button id="btn-copy-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#1e90ff,#00bcd4);">Скопировать</button>
+</div>
+<div id="estimate" class="container hidden" style="margin-top:12px;">
+  <h2 style="margin:0 0 8px;">Смета</h2>
+  <div id="estimate-body">Пока ничего не выбрано.</div>
+  <div class="est-meta" style="margin-top:12px;">
+    <label for="estimate-address" style="display:block;font-size:14px;opacity:.85;margin-bottom:6px;">Адрес:</label>
+    <input id="estimate-address" type="text" placeholder="Укажите адрес объекта" style="width:100%;max-width:600px;">
+  </div>
+</div>
     </div>
   </main>
 
-  <footer>Версия сборки: nordched_new_v_01 • 2025-09-15 19:49:27 (MSK)</footer>
+  <footer>Версия сборки: nordched_new_v_07 • 2025-09-15 20:55:09 (MSK)</footer>
 
   <script src="script.js?reset_01"></script>
   <script>
@@ -132,6 +144,12 @@
   var root = parts.length ? '/' + parts[0] + '/' : '/';
   a.setAttribute('href', root);
 }catch(e){}})();</script>
+
+
+<script>(function(){
+  var a=document.getElementById('logoLink'); if(!a) return;
+  if (!/\.github\.io$/.test(location.hostname)) { a.setAttribute('href','./'); }
+})();</script>
 
 </body>
 </html>

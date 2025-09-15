@@ -72,3 +72,5 @@ body:not(.dark) .calc-table input[type="number"] { --input-border:#000; --input-
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+.hidden{display:none !important;}
