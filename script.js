@@ -114,3 +114,35 @@ function attachEstimateUI(){
   }
 }
 document.addEventListener('DOMContentLoaded', attachEstimateUI);
+
+
+// ===== Смета: добавляем PDF =====
+(function(){
+  function ensureBuilt(){ if (!document.querySelector('#estimate-body table')) { try{ buildEstimate(); }catch(e){} } }
+  const btnPdf = document.getElementById('btn-estimate-pdf');
+  if (!btnPdf) return;
+  btnPdf.addEventListener('click', () => {
+    ensureBuilt();
+    const wrap = document.getElementById('estimate-body');
+    const address = document.getElementById('estimate-address')?.value?.trim() || '';
+    if (!wrap || !wrap.querySelector('table')) { btnPdf.textContent='Нет данных'; setTimeout(()=>btnPdf.textContent='Скачать PDF',1200); return; }
+    const inner = wrap.innerHTML.replace(/<\/script>/ig, '<\\/script>');
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Смета</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        h1 { margin: 0 0 10px; font-size: 20px; }
+        .meta { font-size: 12px; opacity: .8; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+        th, td { border-bottom: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f5f5f5; }
+      </style></head><body>
+      <h1>Смета</h1>
+      <div class="meta">Дата: ${new Date().toLocaleString('ru-RU')}</div>
+      ${address ? `<div class="meta"><b>Адрес:</b> ${address}</div>` : ''}
+      ${inner}
+      <script>window.print();<\/script>
+      </body></html>`;
+    const w = window.open('', '_blank'); if (!w) return;
+    w.document.open(); w.document.write(html); w.document.close();
+  });
+})();

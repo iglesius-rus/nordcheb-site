@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Калькулятор работ — Nord Чеб</title>
-  <link rel="stylesheet" href="style.css?reset_01">
+  <link rel="stylesheet" href="style.css?v08">
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="dark">
   <header>
-    <a href="/" class="logo-link" aria-label="На главную">
-      <a class="logo-link" id="logoLink" href="/nordcheb-site/"><img src="logo.png" alt="Nord Чеб" class="logo">
-    </a>
-    <button id="theme-toggle" aria-label="Переключить тему">🌙 / ☀️</button>
-  </a></header>
+  <a class="logo-link" id="logoLink" href="/nordcheb-site/">
+    <img src="logo.png" alt="Nord Чеб" class="logo">
+  </a>
+  <button id="theme-toggle" aria-label="Переключить тему">🌙 / ☀️</button>
+</header>
 
   <main>
     <div class="container">
@@ -40,6 +40,7 @@
 <div class="est-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap;">
   <button id="btn-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
   <button id="btn-copy-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#1e90ff,#00bcd4);">Скопировать</button>
+  <button id="btn-estimate-pdf" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#4caf50,#8bc34a);">Скачать PDF</button>
 </div>
 <div id="estimate" class="container hidden" style="margin-top:12px;">
   <h2 style="margin:0 0 8px;">Смета</h2>
@@ -52,9 +53,9 @@
     </div>
   </main>
 
-  <footer>Версия сборки: nordched_new_v_07 • 2025-09-15 20:55:09 (MSK)</footer>
+  <footer>Версия сборки: nordched_new_v_08 • 2025-09-15 22:01:48 (MSK)</footer>
 
-  <script src="script.js?reset_01"></script>
+  <script src="script.js?v08"></script>
   <script>
   // Данные — базовые позиции (без 24/28–32)
   const MAIN = [
@@ -65,7 +66,6 @@
   const EXTRA = [
     { name:'Прокладка дополнительной трассы 07–09', unit:'м.п.', price:1500 },
     { name:'Прокладка дополнительной трассы 12–18', unit:'м.п.', price:1700 },
-    { name:'Прокладка дополнительной трассы 24–32', unit:'м.п.', price:2500 },
     { name:'Штроба в монолите, высокоармированном бетоне', unit:'м.п.', price:2500 },
     { name:'Штроба, в силикатном кирпиче', unit:'м.п.', price:1500 },
     { name:'Штроба под дренаж', unit:'м.п.', price:600 },
@@ -132,10 +132,24 @@
       inp.addEventListener('input', recalc);
     });
   }
-  buildTable('#table-main', MAIN);
-  buildTable('#table-extra', EXTRA);
-  wire();
-  recalc();
+  
+// --- Build combined order: after each main, its "Доп. трасса"
+(function(){
+  const tbodyMain = document.querySelector('#table-main tbody');
+  const rows = [];
+  const EXTRA_MAP = {
+    '07-09': { name:'Дополнительная трасса (за 1 м) 07–09', unit:'м.п.', price:1500 },
+    '12':    { name:'Дополнительная трасса (за 1 м) 12',     unit:'м.п.', price:1700 },
+    '18':    { name:'Дополнительная трасса (за 1 м) 18',     unit:'м.п.', price:1700 }
+  };
+  const keyOf = (name)=> name.includes('07-09') ? '07-09' : (name.includes('12') && !name.includes('012')) ? '12' : '18';
+  MAIN.forEach(m => { rows.push(m); rows.push(EXTRA_MAP[keyOf(m.name)]); });
+  tbodyMain.innerHTML = rows.map((r,i)=>rowHTML(r,i)).join('');
+})();
+
+buildTable('#table-extra', EXTRA);
+wire();
+recalc();
   </script>
 
 <script>(function(){try{
