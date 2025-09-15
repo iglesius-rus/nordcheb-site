@@ -1,33 +1,39 @@
-// Тема
+function showSection(id) {
+  document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
 document.getElementById('theme-toggle').addEventListener('click', () => {
   document.body.classList.toggle('dark');
-  try { localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); } catch(e){}
 });
-try { const savedTheme = localStorage.getItem('theme'); if (savedTheme === 'light') document.body.classList.remove('dark'); } catch(e){}
 
-/* Аккордеон */
-function setMaxHeight(el, open) { if (open) el.style.maxHeight = el.scrollHeight + 'px'; else el.style.maxHeight = '0px'; }
-function scrollToPanel(panel){ panel.scrollIntoView({ behavior:'smooth', block:'start' }); }
-function saveState(){ try { const openIds = Array.from(document.querySelectorAll('.content-section.open')).map(p => p.id); localStorage.setItem('openPanels', JSON.stringify(openIds)); } catch(e){} }
-function restoreState(){ try { const openIds = JSON.parse(localStorage.getItem('openPanels') || '[]'); openIds.forEach(id => { const panel = document.getElementById(id); const btn = panel?.previousElementSibling; if (panel && btn) { panel.classList.add('open'); setMaxHeight(panel, true); btn.classList.add('active'); btn.setAttribute('aria-expanded', 'true'); } }); } catch(e){} }
+/* ===== UX для числовых полей (v29) =====
+   - Пустое поле/ноль: при фокусе выделяется целиком
+   - Первая цифра заменяет ноль/пустое значение
+   - Разрешаем только неотрицательные целые
+*/
+function enhanceNumberInputs(scope=document){
+  const isDigit = (k) => /^[0-9]$/.test(k);
+  scope.querySelectorAll('input[type="number"]').forEach(inp => {
+    const selectIfZeroOrEmpty = () => {
+      if (inp.value === "" || inp.value === "0") { try { inp.select(); } catch(e){} }
+    };
+    inp.addEventListener('focus', selectIfZeroOrEmpty);
+    inp.addEventListener('click', selectIfZeroOrEmpty);
 
-document.querySelectorAll('.acc-item').forEach(item => {
-  const btn = item.querySelector('.menu-btn');
-  const panel = item.querySelector('.content-section');
-  if (!btn || !panel) return;
-  setMaxHeight(panel, false);
-  btn.addEventListener('click', () => {
-    const isOpen = panel.classList.toggle('open');
-    btn.classList.toggle('active', isOpen);
-    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    setMaxHeight(panel, isOpen);
-    try { saveState(); } catch(e) {}
-    if (isOpen) scrollToPanel(panel);
+    inp.addEventListener('keydown', (e) => {
+      if ((inp.value === "" || inp.value === "0") && isDigit(e.key)) {
+        inp.value = "";
+      }
+    });
+
+    inp.addEventListener('input', () => {
+      // Оставляем пустое как пустое, иначе приводим к неотрицательному целому
+      if (inp.value === "") return;
+      let n = String(inp.value).replace(/[^0-9]/g, "");
+      if (n === "") { inp.value = ""; return; }
+      inp.value = String(Math.max(0, parseInt(n, 10)));
+    });
   });
-});
-window.addEventListener('resize', () => {
-  document.querySelectorAll('.content-section.open').forEach(panel => {
-    panel.style.maxHeight = panel.scrollHeight + 'px';
-  });
-});
-restoreState();
+}
+try { enhanceNumberInputs(document); } catch(e) {}
