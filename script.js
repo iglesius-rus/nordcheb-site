@@ -147,34 +147,33 @@ document.addEventListener('DOMContentLoaded', attachEstimateUI);
   });
 })();
 // ---- Scroll FAB (calc page) ----
+
 function initScrollFab(){
   const fab = document.getElementById('scrollFab');
   if (!fab) return;
-  const setMode = () => {
-    const nearTop = (window.scrollY || document.documentElement.scrollTop) < 120;
-    if (nearTop){
-      fab.dataset.mode = 'down';
-      fab.textContent = '↓';
-      fab.title = 'Вниз';
-      fab.setAttribute('aria-label', 'Прокрутить вниз');
-    } else {
-      fab.dataset.mode = 'up';
-      fab.textContent = '↑';
-      fab.title = 'Вверх';
-      fab.setAttribute('aria-label', 'Прокрутить вверх');
+  const update = () => {
+    const doc = document.documentElement;
+    const maxScroll = Math.max(
+      document.body.scrollHeight, doc.scrollHeight
+    ) - window.innerHeight;
+    const y = window.scrollY || doc.scrollTop || 0;
+    if (maxScroll < 200) { fab.style.display = 'none'; return; } else { fab.style.display = 'grid'; }
+    const pos = y / (maxScroll || 1);
+    if (pos < 0.20) { // верхняя треть
+      fab.dataset.mode = 'down'; fab.textContent = '↓'; fab.title = 'Вниз'; fab.setAttribute('aria-label','Прокрутить вниз');
+    } else { // середина и низ
+      fab.dataset.mode = 'up'; fab.textContent = '↑'; fab.title = 'Вверх'; fab.setAttribute('aria-label','Прокрутить вверх');
     }
   };
-  setMode();
-  window.addEventListener('scroll', setMode, { passive: true });
-  window.addEventListener('resize', setMode);
+  update();
+  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('resize', update);
   fab.addEventListener('click', () => {
     if (fab.dataset.mode === 'up'){
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const bottom = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight
-      ) - window.innerHeight;
+      const doc = document.documentElement;
+      const bottom = Math.max(document.body.scrollHeight, doc.scrollHeight) - window.innerHeight;
       window.scrollTo({ top: bottom, behavior: 'smooth' });
     }
   });
