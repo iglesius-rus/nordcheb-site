@@ -58,37 +58,3 @@ header {
 .content-section.active {
   display: block;
 }
-
-/* ===== Поля ввода: постоянная рамка (v29) ===== */
-input[type="number"], input[type="text"], input[type="tel"], input[type="email"] {
-  -webkit-appearance: none;
-  appearance: none;
-  border: 2px solid var(--input-border);
-  border-radius: 12px;
-  padding: 10px 14px;
-  background: var(--input-bg);
-  color: inherit;
-  box-shadow: none;
-  transition: border-color .2s, box-shadow .2s, background .2s;
-}
-body.dark { --input-border: rgba(255,255,255,.95); --input-bg:#0f0f0f; }
-body:not(.dark) { --input-border: rgba(0,0,0,.9); --input-bg:#ffffff; }
-input[type="number"]:focus, input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus {
-  outline: none;
-  border-color: #1e90ff;
-  box-shadow: 0 0 10px rgba(30,144,255,.55);
-}
-/* Для ячеек калькулятора — переопределяем на всякий случай */
-
-
-/* Версия в подвале */
-footer small, footer { opacity:.7 }
-
-/* Узкие поля количества (вмещают до 2-3 цифр) */
-.calc-table input[type="number"] {
-  width: 72px;
-  text-align: center;
-}
-@media (max-width: 720px) {
-  .calc-table input[type="number"] { width: 64px; }
-}
