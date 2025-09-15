@@ -34,6 +34,11 @@ restoreState();
 
 
 (() => {
+
+
+
+/* Set logo link to repo root explicitly */
+(() => {
   const a = document.getElementById('logoLink');
-  if (a) a.href = '/';
+  if (a) a.href = '/nordcheb-site/';
 })();
