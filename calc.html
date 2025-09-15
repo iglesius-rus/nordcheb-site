@@ -46,108 +46,10 @@
   </main>
 
   <footer style="padding:16px;opacity:.7;font-size:12px; text-align:center;">
-    Версия сборки: v34 • 2025-09-15 18:58:40 (MSK)</footer>
+    Версия сборки: v35 • 2025-09-15 19:04:57 (MSK)</footer>
 
-  <script>
-  (function(){
-    const params = new URLSearchParams(location.search);
-    try {
-      if (params.get('calc') === 'ok') localStorage.setItem('calcAccess', '1');
-      const ok = localStorage.getItem('calcAccess') === '1';
-      document.getElementById('guard').classList.toggle('hidden', ok);
-      document.getElementById('calc-app').classList.toggle('hidden', !ok);
-    } catch(e){}
-  })();
-  </script>
+  
 
-  <script src="script.js?v24"></script>
-
-  <script>
-  // Основные позиции: 07–09, 12, 18 (24 и выше убраны по просьбе заказчика)
-  const MAIN = [
-    { name:'Монтаж настенного кондиционера 07-09 BTU', unit:'компл.', price:13000 },
-    { name:'Монтаж настенного кондиционера 12 BTU', unit:'компл.', price:14000 },
-    { name:'Монтаж настенного кондиционера 18 BTU', unit:'компл.', price:16000 }
-  ];
-
-  const EXTRA = [
-    { name:'Прокладка дополнительной трассы 07–09', unit:'м.п.', price:1500 },
-    { name:'Прокладка дополнительной трассы 12–18', unit:'м.п.', price:1700 },
-    { name:'Прокладка дополнительной трассы 24–32', unit:'м.п.', price:2500 },
-    { name:'Штроба в монолите, высокоармированном бетоне', unit:'м.п.', price:2500 },
-    { name:'Штроба, в силикатном кирпиче', unit:'м.п.', price:1500 },
-    { name:'Штроба под дренаж', unit:'м.п.', price:600 },
-    { name:'Пробивка доп. отверстия (ГКЛ и т.п., Ø до 60 мм)', unit:'отв.', price:500 },
-    { name:'Установка помпы насоса', unit:'шт.', price:2000 },
-    { name:'Пробивка доп. отверстия (бетон, Ø 52 мм)', unit:'отв.', price:2000 },
-    { name:'Пробивка доп. отверстия (кирпич, Ø 52 мм)', unit:'отв.', price:1000 },
-    { name:'Демонтаж кондиционера 07–12', unit:'шт.', price:2000 },
-    { name:'Демонтаж кондиционера 18–24', unit:'шт.', price:4000 },
-    { name:'Демонтаж внутреннего/наружного блока (за каждый)', unit:'блок', price:3000 },
-    { name:'Монтаж внутреннего блока 07–12 (пуско-наладка)', unit:'блок', price:3500 },
-    { name:'Работа альпиниста', unit:'услуга', price:5500 },
-    { name:'Монтаж наружного блока на вентилируемый фасад', unit:'услуга', price:3500 },
-    { name:'Монтаж дополнительного дренажа без короба', unit:'м.п.', price:150 },
-    { name:'Разборка/сборка подвесного потолка', unit:'м.п.', price:200 },
-    { name:'Пайка фреоновых труб (за каждую)', unit:'пайка', price:500 },
-    { name:'Чистка кондиционера (внутренний и наружный блок)', unit:'компл.', price:2500 },
-    { name:'Дозаправка кондиционера фреоном', unit:'кг.', price:6000 },
-    { name:'Каждый дополнительный выезд', unit:'выезд', price:1000 },
-    { name:'Повторный выезд по вине клиента', unit:'выезд', price:2000 },
-    { name:'Автовышка от 3 ч до 24 м', unit:'ч.', price:3000 },
-    { name:'Установка антивандальной решётки', unit:'шт.', price:3000 },
-    { name:'Установка зимнего комплекта', unit:'шт.', price:3000 },
-    { name:'Доп. кабель‑канал', unit:'м.', price:500 },
-    { name:'Разборка стеклопакета', unit:'шт.', price:1000 },
-    { name:'Выезд за пределы города (в обе стороны, от г. Чебоксары)', unit:'км.', price:30 }
-  ];
-
-  function format(n) { return n.toLocaleString('ru-RU'); }
-
-  function rowHTML(r, idx) {
-    return `
-      <tr>
-        <td data-label="Наименование работ">${r.name}</td>
-        <td data-label="Кол-во"><input type="number" inputmode="numeric" pattern="[0-9]*" min="0" step="1" value="" data-index="${idx}"></td>
-        <td data-label="Ед. изм.">${r.unit}</td>
-        <td class="price" data-label="Цена ед.">${format(r.price)} ₽</td>
-        <td class="sum" data-sum="0" data-label="Цена">0 ₽</td>
-      </tr>`;
-  }
-
-  function buildTable(id, rows) {
-    const tbody = document.querySelector(id + ' tbody');
-    tbody.innerHTML = rows.map((r,i) => rowHTML(r,i)).join('');
-  }
-
-  function recalc() {
-    let total = 0;
-    document.querySelectorAll('#table-main tbody tr').forEach((tr, i) => {
-      const qty = parseFloat(tr.querySelector('input').value || 0);
-      const sum = Math.max(0, qty) * MAIN[i].price;
-      total += sum;
-      tr.querySelector('.sum').dataset.sum = sum;
-      tr.querySelector('.sum').textContent = format(sum) + ' ₽';
-    });
-    document.querySelectorAll('#table-extra tbody tr').forEach((tr, i) => {
-      const qty = parseFloat(tr.querySelector('input').value || 0);
-      const sum = Math.max(0, qty) * EXTRA[i].price;
-      total += sum;
-      tr.querySelector('.sum').dataset.sum = sum;
-      tr.querySelector('.sum').textContent = format(sum) + ' ₽';
-    });
-    document.getElementById('grand-total').textContent = format(total);
-  }
-
-  function wire() {
-    document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => { inp.addEventListener('input', recalc); });
-  }
-
-  buildTable('#table-main', MAIN);
-  buildTable('#table-extra', EXTRA);
-  wire();
-  recalc();
-  </script>
 
 <script>
 function enhanceNumberInputs(scope=document){
@@ -260,21 +162,22 @@ function attachPdfHandler(){
     const wrap = document.getElementById('estimate-body');
     const address = document.getElementById('estimate-address')?.value?.trim() || '';
     if (!wrap || !wrap.querySelector('table')) { btn.textContent='Нет данных'; setTimeout(()=>btn.textContent='Скачать PDF', 1200); return; }
+    const inner = wrap.innerHTML.replace(/<\/script>/ig, '<\\/script>'); // escape closing script
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Смета</title>
       <style>
-        body {{ font-family: Arial, sans-serif; margin: 24px; }}
-        h1 {{ margin: 0 0 10px; font-size: 20px; }}
-        .meta {{ font-size: 12px; opacity: .8; margin-bottom: 8px; }}
-        table {{ width: 100%; border-collapse: collapse; margin-top: 6px; }}
-        th, td {{ border-bottom: 1px solid #ccc; padding: 8px; text-align: left; }}
-        th {{ background: #f5f5f5; }}
-        .total {{ text-align: right; font-weight: 700; margin-top: 10px; }}
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        h1 { margin: 0 0 10px; font-size: 20px; }
+        .meta { font-size: 12px; opacity: .8; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+        th, td { border-bottom: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f5f5f5; }
+        .total { text-align: right; font-weight: 700; margin-top: 10px; }
       </style></head><body>
       <h1>Смета</h1>
       <div class="meta">Дата: ${new Date().toLocaleString('ru-RU')}</div>
       ${address ? `<div class="meta"><b>Адрес:</b> ${address}</div>` : ''}
-      ${wrap.innerHTML}
-      <script>window.print();</script>
+      ${inner}
+      <script>window.print();<\/script>
       </body></html>`;
     const w = window.open('', '_blank');
     if (!w) return;
