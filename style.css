@@ -79,7 +79,16 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="tel"]:focus, i
   box-shadow: 0 0 10px rgba(30,144,255,.55);
 }
 /* Для ячеек калькулятора — переопределяем на всякий случай */
-.calc-table input[type="number"] { border: 2px solid var(--input-border) !important; background: var(--input-bg) !important; }
+
 
 /* Версия в подвале */
 footer small, footer { opacity:.7 }
+
+/* Узкие поля количества (вмещают до 2-3 цифр) */
+.calc-table input[type="number"] {
+  width: 72px;
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .calc-table input[type="number"] { width: 64px; }
+}
