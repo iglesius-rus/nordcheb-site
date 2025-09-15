@@ -146,3 +146,37 @@ document.addEventListener('DOMContentLoaded', attachEstimateUI);
     w.document.open(); w.document.write(html); w.document.close();
   });
 })();
+// ---- Scroll FAB (calc page) ----
+function initScrollFab(){
+  const fab = document.getElementById('scrollFab');
+  if (!fab) return;
+  const setMode = () => {
+    const nearTop = (window.scrollY || document.documentElement.scrollTop) < 120;
+    if (nearTop){
+      fab.dataset.mode = 'down';
+      fab.textContent = '↓';
+      fab.title = 'Вниз';
+      fab.setAttribute('aria-label', 'Прокрутить вниз');
+    } else {
+      fab.dataset.mode = 'up';
+      fab.textContent = '↑';
+      fab.title = 'Вверх';
+      fab.setAttribute('aria-label', 'Прокрутить вверх');
+    }
+  };
+  setMode();
+  window.addEventListener('scroll', setMode, { passive: true });
+  window.addEventListener('resize', setMode);
+  fab.addEventListener('click', () => {
+    if (fab.dataset.mode === 'up'){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const bottom = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      ) - window.innerHeight;
+      window.scrollTo({ top: bottom, behavior: 'smooth' });
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', initScrollFab);
