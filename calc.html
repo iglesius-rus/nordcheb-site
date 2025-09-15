@@ -46,7 +46,7 @@
   </main>
 
   <footer style="padding:16px;opacity:.7;font-size:12px; text-align:center;">
-    Версия сборки: v33 • 2025-09-15 15:29:01 (MSK)</footer>
+    Версия сборки: v34 • 2025-09-15 18:58:40 (MSK)</footer>
 
   <script>
   (function(){
@@ -65,9 +65,9 @@
   <script>
   // Основные позиции: 07–09, 12, 18 (24 и выше убраны по просьбе заказчика)
   const MAIN = [
-    { name:'Стандартный монтаж настенного кондиционера 07–09 (до 3 м магистрали)', unit:'компл.', price:13000 },
-    { name:'Стандартный монтаж настенного кондиционера 12 (до 3 м магистрали)', unit:'компл.', price:14000 },
-    { name:'Стандартный монтаж настенного кондиционера 18 (до 3 м магистрали)', unit:'компл.', price:16000 }
+    { name:'Монтаж настенного кондиционера 07-09 BTU', unit:'компл.', price:13000 },
+    { name:'Монтаж настенного кондиционера 12 BTU', unit:'компл.', price:14000 },
+    { name:'Монтаж настенного кондиционера 18 BTU', unit:'компл.', price:16000 }
   ];
 
   const EXTRA = [
@@ -150,18 +150,13 @@
   </script>
 
 <script>
-// Узкий ввод: выделяем 0/пустое и очищаем на первую цифру
 function enhanceNumberInputs(scope=document){
   const isDigit = (k) => /^[0-9]$/.test(k);
   scope.querySelectorAll('input[type="number"]').forEach(inp => {
-    const selectIfZeroOrEmpty = () => {
-      if (inp.value === "" || inp.value === "0") { try { inp.select(); } catch(e){} }
-    };
+    const selectIfZeroOrEmpty = () => { if (inp.value === "" || inp.value === "0") { try { inp.select(); } catch(e){} } };
     inp.addEventListener('focus', selectIfZeroOrEmpty);
     inp.addEventListener('click', selectIfZeroOrEmpty);
-    inp.addEventListener('keydown', (e) => {
-      if ((inp.value === "" || inp.value === "0") && isDigit(e.key)) { inp.value = ""; }
-    });
+    inp.addEventListener('keydown', (e) => { if ((inp.value === "" || inp.value === "0") && isDigit(e.key)) { inp.value = ""; } });
     inp.addEventListener('input', () => {
       if (inp.value === "") return;
       let n = String(inp.value).replace(/[^0-9]/g, "");
@@ -172,7 +167,6 @@ function enhanceNumberInputs(scope=document){
 }
 try { enhanceNumberInputs(document); } catch(e){}
 
-// Формирование сметы
 function parseMoney(text){ const d = String(text||'').replace(/[^\d]/g,''); return d?parseInt(d,10):0; }
 function buildEstimate(){
   const rows = [];
@@ -208,24 +202,11 @@ function buildEstimate(){
     </div>
     <div class="total-line" style="margin-top:10px;"><b>Итого по смете:</b> ${total.toLocaleString('ru-RU')} ₽</div>`;
 }
-const estBtn = document.getElementById('btn-estimate');
-if (estBtn){
-  estBtn.addEventListener('click', () => {
-    buildEstimate();
-    const est = document.getElementById('estimate');
-    if (est){ est.classList.remove('hidden'); est.scrollIntoView({behavior:'smooth', block:'start'}); }
-  });
-}
-</script>
 
-
-<script>
 function estimateToPlainText(){
-  const rows = [];
   const wrap = document.getElementById('estimate-body');
   if (!wrap) return '';
-
-  // Prefer parsed values from DOM of #estimate-body if already rendered
+  const rows = [];
   const table = wrap.querySelector('table');
   if (table){
     const trs = table.querySelectorAll('tbody tr');
@@ -237,58 +218,71 @@ function estimateToPlainText(){
       rows.push(`${name} — ${qty} шт. × ${price} = ${sum}`);
     });
     const totalLine = wrap.querySelector('.total-line')?.textContent.replace(/\s+/g,' ').trim() || '';
-    return (rows.join('\n') + (rows.length ? `\n${totalLine}` : '')).trim();
+    const address = document.getElementById('estimate-address')?.value?.trim();
+    return (rows.join('\n') + (rows.length ? `\n${totalLine}` : '') + (address ? `\nАдрес: ${address}` : '')).trim();
   }
-
-  // If table not rendered yet, build from inputs (same as buildEstimate)
-  const parseMoney = (t) => { const d = String(t||'').replace(/[^\d]/g,''); return d?parseInt(d,10):0; };
-  document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
-    const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
-    const qty  = parseInt(tr.querySelector('input')?.value || '0', 10) || 0;
-    const unitPrice = parseMoney(tr.querySelector('.price')?.textContent);
-    const sum  = parseMoney(tr.querySelector('.sum')?.textContent);
-    if (qty > 0 && sum > 0) {
-      rows.push(`${name} — ${qty} шт. × ${unitPrice.toLocaleString('ru-RU')} ₽ = ${sum.toLocaleString('ru-RU')} ₽`);
-    }
-  });
-  const total = rows.reduce((acc, line) => {
-    const m = line.match(/= ([\d\s]+) ₽$/);
-    return acc + (m ? parseInt(m[1].replace(/\s+/g,''),10) : 0);
-  }, 0);
-  return rows.length ? `${rows.join('\n')}\nИтого по смете: ${total.toLocaleString('ru-RU')} ₽` : '';
+  return '';
 }
 
 function attachCopyHandler(){
   const btn = document.getElementById('btn-copy-estimate');
   if (!btn) return;
   btn.addEventListener('click', async () => {
+    if (!document.querySelector('#estimate-body table')) { if (typeof buildEstimate === 'function') buildEstimate(); }
+    const text = estimateToPlainText();
+    if (!text) { btn.textContent = 'Нет данных'; setTimeout(()=>btn.textContent='Скопировать', 1200); return; }
     try {
-      // Если смета ещё не собрана — соберём, чтобы кнопка всегда работала
-      if (!document.querySelector('#estimate-body table')) {
-        if (typeof buildEstimate === 'function') buildEstimate();
-      }
-      const text = estimateToPlainText();
-      if (!text) { btn.textContent = 'Нет данных'; setTimeout(()=>btn.textContent='Скопировать', 1200); return; }
       await navigator.clipboard.writeText(text);
-      const old = btn.textContent;
-      btn.textContent = 'Скопировано ✅';
-      setTimeout(() => btn.textContent = old, 1500);
+      const old = btn.textContent; btn.textContent = 'Скопировано ✅'; setTimeout(()=>btn.textContent = old, 1500);
     } catch(e){
-      // Фоллбек через скрытый textarea
-      const text = estimateToPlainText();
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); } catch(e2){}
-      document.body.removeChild(ta);
-      const old = btn.textContent;
-      btn.textContent = 'Скопировано ✅';
-      setTimeout(() => btn.textContent = old, 1500);
+      const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch(e2){} document.body.removeChild(ta);
+      const old = btn.textContent; btn.textContent = 'Скопировано ✅'; setTimeout(()=>btn.textContent = old, 1500);
     }
   });
 }
-try { attachCopyHandler(); } catch(e){}
+
+function attachEstimateHandler(){
+  const btn = document.getElementById('btn-estimate');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    buildEstimate();
+    const est = document.getElementById('estimate');
+    if (est){ est.classList.remove('hidden'); est.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+}
+
+function attachPdfHandler(){
+  const btn = document.getElementById('btn-estimate-pdf');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    if (!document.querySelector('#estimate-body table')) { if (typeof buildEstimate === 'function') buildEstimate(); }
+    const wrap = document.getElementById('estimate-body');
+    const address = document.getElementById('estimate-address')?.value?.trim() || '';
+    if (!wrap || !wrap.querySelector('table')) { btn.textContent='Нет данных'; setTimeout(()=>btn.textContent='Скачать PDF', 1200); return; }
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Смета</title>
+      <style>
+        body {{ font-family: Arial, sans-serif; margin: 24px; }}
+        h1 {{ margin: 0 0 10px; font-size: 20px; }}
+        .meta {{ font-size: 12px; opacity: .8; margin-bottom: 8px; }}
+        table {{ width: 100%; border-collapse: collapse; margin-top: 6px; }}
+        th, td {{ border-bottom: 1px solid #ccc; padding: 8px; text-align: left; }}
+        th {{ background: #f5f5f5; }}
+        .total {{ text-align: right; font-weight: 700; margin-top: 10px; }}
+      </style></head><body>
+      <h1>Смета</h1>
+      <div class="meta">Дата: ${new Date().toLocaleString('ru-RU')}</div>
+      ${address ? `<div class="meta"><b>Адрес:</b> ${address}</div>` : ''}
+      ${wrap.innerHTML}
+      <script>window.print();</script>
+      </body></html>`;
+    const w = window.open('', '_blank');
+    if (!w) return;
+    w.document.open(); w.document.write(html); w.document.close();
+  });
+}
+
+try { attachCopyHandler(); attachEstimateHandler(); attachPdfHandler(); } catch(e){}
 </script>
 
 </body>
