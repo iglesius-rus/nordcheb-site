@@ -479,3 +479,104 @@ const disc = document.getElementById('discount-input'); if (disc && !disc._wired
   setTimeout(safeRender, 300); // second pass after other scripts
 })();
 /* ===== End bulletproof init ===== */
+
+
+/* ===== Ultra-bulletproof init (v018) ===== */
+(function(){
+  function ensureContainers(){
+    const main = document.querySelector('main') || document.body;
+    if (!document.getElementById('table-main')){
+      const sec = document.createElement('section');
+      sec.innerHTML = `<h2>Основные работы</h2>
+      <table id="table-main" class="calc-table">
+        <thead><tr><th>Позиция</th><th>Кол-во</th><th>Ед.</th><th class="num">Цена</th><th class="num">Сумма</th></tr></thead>
+        <tbody></tbody>
+      </table>`;
+      main.insertBefore(sec, main.firstChild);
+    }
+    if (!document.getElementById('table-extra')){
+      const sec = document.createElement('section');
+      sec.innerHTML = `<h2>Дополнительные работы</h2>
+      <table id="table-extra" class="calc-table">
+        <thead><tr><th>Позиция</th><th>Кол-во</th><th>Ед.</th><th class="num">Цена</th><th class="num">Сумма</th></tr></thead>
+        <tbody></tbody>
+      </table>`;
+      document.querySelector('main').appendChild(sec);
+    }
+    if (!document.getElementById('btn-recalc')){
+      const block = document.createElement('div');
+      block.className = 'actions';
+      block.innerHTML = `<span class="grand">Итого: <b><span id="grand-total">0</span> ₽</b></span>
+      <button class="btn" id="btn-recalc">Рассчёт</button>
+      <button class="btn" id="btn-copy">Скопировать</button>
+      <button class="btn" id="btn-pdf">Скачать PDF</button>`;
+      document.querySelector('main').appendChild(block);
+    }
+    if (!document.getElementById('estimate')){
+      const sec = document.createElement('section');
+      sec.id = 'estimate';
+      sec.className = 'hidden';
+      sec.innerHTML = '<h2>Смета</h2><div id="estimate-body"></div>';
+      document.querySelector('main').appendChild(sec);
+    }
+  }
+
+  function fallbackRender(selector, data){
+    const tbody = document.querySelector(selector + ' tbody');
+    if (!tbody || !Array.isArray(data)) return;
+    tbody.innerHTML = data.map(row => `
+      <tr data-discount="${row.discount ? '1' : '0'}">
+        <td>${row.name}</td>
+        <td><input type="number" min="${row.min ?? 0}" max="${row.max ?? ''}" step="${row.step || 1}" value="0" data-name="${row.name}"></td>
+        <td>${row.unit || ''}</td>
+        <td class="num price">${row.discount ? '—' : (row.price || 0).toLocaleString('ru-RU') + ' ₽'}</td>
+        <td class="num sum">0 ₽</td>
+      </tr>`).join('');
+  }
+
+  function init(){
+    ensureContainers();
+    try{
+      if (typeof renderTable === 'function'){
+        if (typeof MAIN !== 'undefined') renderTable('#table-main', MAIN);
+        if (typeof EXTRA !== 'undefined') renderTable('#table-extra', EXTRA);
+      } else {
+        if (typeof MAIN !== 'undefined') fallbackRender('#table-main', MAIN);
+        if (typeof EXTRA !== 'undefined') fallbackRender('#table-extra', EXTRA);
+      }
+    }catch(e){
+      if (typeof MAIN !== 'undefined') fallbackRender('#table-main', MAIN);
+      if (typeof EXTRA !== 'undefined') fallbackRender('#table-extra', EXTRA);
+      console && console.warn('Fallback render used:', e);
+    }
+    // wire events safely
+    try{
+      if (typeof attachCalc === 'function') attachCalc();
+    }catch(e){}
+    // last resort: simple wiring
+    try{
+      document.querySelectorAll('input[type="number"]').forEach(inp => {
+        inp.addEventListener('input', recalcAll);
+        inp.addEventListener('change', recalcAll);
+      });
+      document.getElementById('btn-recalc')?.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); });
+      document.getElementById('btn-copy')?.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); (navigator.clipboard&&navigator.clipboard.writeText(document.querySelector('#estimate-body')?.innerText||'')); });
+      document.getElementById('btn-pdf')?.addEventListener('click', ()=>{
+        recalcAll(); buildEstimate();
+        const win = window.open('', '_blank');
+        if (!win) return;
+        const html = document.querySelector('#estimate-body')?.innerHTML || '<p>Смета пуста</p>';
+        win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Расчёт</title>
+        <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;}th{text-align:left}.right{text-align:right}</style></head><body><h2>Расчёт</h2>${html}</body></html>`);
+        win.document.close(); setTimeout(()=>win.print(),300);
+      });
+    }catch(e){}
+    // first recalc
+    try{ recalcAll(); }catch(e){}
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+  setTimeout(init, 300);
+})();
+/* ===== End ultra-bulletproof init ===== */
