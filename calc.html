@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Калькулятор работ — Nord Чеб</title>
-  <link rel="stylesheet" href="style.css?v16">
+  <link rel="stylesheet" href="style.css?reset_01">
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="dark">
   <header>
-    <a class="logo-link" id="logoLink" href="/nordcheb-site/">
-      <img src="logo.png" alt="Nord Чеб" class="logo">
+    <a href="/" class="logo-link" aria-label="На главную">
+      <a class="logo-link" id="logoLink" href="/nordcheb-site/"><img src="logo.png" alt="Nord Чеб" class="logo">
     </a>
     <button id="theme-toggle" aria-label="Переключить тему">🌙 / ☀️</button>
-  </header>
+  </a></header>
 
   <main>
     <div class="container">
@@ -37,36 +37,35 @@
       </table>
 
       <div class="total-line"><b>Итого:</b> <span id="grand-total">0</span> ₽</div>
-
-      <div class="est-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap;">
-        <button id="btn-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
-        <button id="btn-copy-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#1e90ff,#00bcd4);">Скопировать</button>
-        <button id="btn-estimate-pdf" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#4caf50,#8bc34a);">Скачать PDF</button>
-      </div>
-      <div id="estimate" class="container hidden" style="margin-top:12px;">
-        <h2 style="margin:0 0 8px;">Смета</h2>
-        <div id="estimate-body">Пока ничего не выбрано.</div>
-        <div class="est-meta" style="margin-top:12px;">
-          <label for="estimate-address" style="display:block;font-size:14px;opacity:.85;margin-bottom:6px;">Адрес:</label>
-          <input id="estimate-address" type="text" placeholder="Укажите адрес объекта" style="width:100%;max-width:600px;">
-        </div>
-      </div>
+<div class="est-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap;">
+  <button id="btn-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
+  <button id="btn-copy-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#1e90ff,#00bcd4);">Скопировать</button>
+</div>
+<div id="estimate" class="container hidden" style="margin-top:12px;">
+  <h2 style="margin:0 0 8px;">Смета</h2>
+  <div id="estimate-body">Пока ничего не выбрано.</div>
+  <div class="est-meta" style="margin-top:12px;">
+    <label for="estimate-address" style="display:block;font-size:14px;opacity:.85;margin-bottom:6px;">Адрес:</label>
+    <input id="estimate-address" type="text" placeholder="Укажите адрес объекта" style="width:100%;max-width:600px;">
+  </div>
+</div>
     </div>
   </main>
 
-  <div id="scrollFab" class="scroll-fab" role="button" aria-label="Прокрутить страницу" title="Вверх">↑</div>
+  <footer>Версия сборки: nordched_new_v_07 • 2025-09-15 20:55:09 (MSK)</footer>
 
-  <footer>Версия сборки: nordched_new_v_16_clean • 2025-09-15 23:32:31 (MSK) • © Вано 2025</footer>
-
-  <script src="script.js?v16"></script>
+  <script src="script.js?reset_01"></script>
   <script>
-  // Данные — MAIN и EXTRA
+  // Данные — базовые позиции (без 24/28–32)
   const MAIN = [
-    { name:'Монтаж настенного кондиционера 07-09 BTU', unit:'компл.', price:12000 },
+    { name:'Монтаж настенного кондиционера 07-09 BTU', unit:'компл.', price:13000 },
     { name:'Монтаж настенного кондиционера 12 BTU', unit:'компл.', price:14000 },
     { name:'Монтаж настенного кондиционера 18 BTU', unit:'компл.', price:16000 }
   ];
   const EXTRA = [
+    { name:'Прокладка дополнительной трассы 07–09', unit:'м.п.', price:1500 },
+    { name:'Прокладка дополнительной трассы 12–18', unit:'м.п.', price:1700 },
+    { name:'Прокладка дополнительной трассы 24–32', unit:'м.п.', price:2500 },
     { name:'Штроба в монолите, высокоармированном бетоне', unit:'м.п.', price:2500 },
     { name:'Штроба, в силикатном кирпиче', unit:'м.п.', price:1500 },
     { name:'Штроба под дренаж', unit:'м.п.', price:600 },
@@ -95,12 +94,62 @@
     { name:'Выезд за пределы города (в обе стороны, от г. Чебоксары)', unit:'км.', price:30 }
   ];
 
-  // Построение таблиц
-  buildMainWithExtras(MAIN);
+  function format(n) { return n.toLocaleString('ru-RU'); }
+  function rowHTML(r, idx) {
+    return `
+      <tr>
+        <td data-label="Наименование работ">${r.name}</td>
+        <td data-label="Кол-во"><input type="number" inputmode="numeric" pattern="[0-9]*" min="0" step="1" value=""></td>
+        <td data-label="Ед. изм.">${r.unit}</td>
+        <td class="price" data-label="Цена ед.">${format(r.price)} ₽</td>
+        <td class="sum" data-sum="0" data-label="Цена">0 ₽</td>
+      </tr>`;
+  }
+  function buildTable(id, rows) {
+    const tbody = document.querySelector(id + ' tbody');
+    tbody.innerHTML = rows.map((r,i) => rowHTML(r,i)).join('');
+  }
+  function recalc() {
+    let total = 0;
+    document.querySelectorAll('#table-main tbody tr').forEach((tr, i) => {
+      const qty = parseInt(tr.querySelector('input').value || '0', 10) || 0;
+      const sum = Math.max(0, qty) * MAIN[i].price;
+      total += sum;
+      tr.querySelector('.sum').dataset.sum = sum;
+      tr.querySelector('.sum').textContent = format(sum) + ' ₽';
+    });
+    document.querySelectorAll('#table-extra tbody tr').forEach((tr, i) => {
+      const qty = parseInt(tr.querySelector('input').value || '0', 10) || 0;
+      const sum = Math.max(0, qty) * EXTRA[i].price;
+      total += sum;
+      tr.querySelector('.sum').dataset.sum = sum;
+      tr.querySelector('.sum').textContent = format(sum) + ' ₽';
+    });
+    document.getElementById('grand-total').textContent = format(total);
+  }
+  function wire() {
+    document.querySelectorAll('.calc-table input[type="number"]').forEach(inp => {
+      inp.addEventListener('input', recalc);
+    });
+  }
+  buildTable('#table-main', MAIN);
   buildTable('#table-extra', EXTRA);
-  wireCalcInputs();
+  wire();
   recalc();
   </script>
-  <script>(function(){var a=document.getElementById('logoLink'); if(!a)return; if(!/\.github\.io$/.test(location.hostname)) a.setAttribute('href','./');})();</script>
+
+<script>(function(){try{
+  var a=document.getElementById('logoLink'); if(!a) return;
+  var parts=location.pathname.split('/').filter(Boolean);
+  var root = parts.length ? '/' + parts[0] + '/' : '/';
+  a.setAttribute('href', root);
+}catch(e){}})();</script>
+
+
+<script>(function(){
+  var a=document.getElementById('logoLink'); if(!a) return;
+  if (!/\.github\.io$/.test(location.hostname)) { a.setAttribute('href','./'); }
+})();</script>
+
 </body>
 </html>
