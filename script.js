@@ -129,8 +129,7 @@ function estimateToPlainText(){
     const qty  = tr.children[1]?.textContent.trim() || '';
     const price= tr.children[2]?.textContent.trim() || '';
     const sum  = tr.children[3]?.textContent.trim() || '';
-    const unit = tr.children[2]?.textContent.trim() || 'шт.';
-    rows.push(`${name} — ${qty} ${unit} × ${price} = ${sum}`);
+    rows.push(`${name} — ${qty} шт. × ${price} = ${sum}`);
   });
   const totalLine = wrap.querySelector('.total-line')?.textContent.replace(/\s+/g,' ').trim() || '';
   const address = document.getElementById('estimate-address')?.value?.trim();
