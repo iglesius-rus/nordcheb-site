@@ -580,3 +580,135 @@ const disc = document.getElementById('discount-input'); if (disc && !disc._wired
   setTimeout(init, 300);
 })();
 /* ===== End ultra-bulletproof init ===== */
+
+
+/* ==== v019 core calculator ==== */
+function format(n){ return (n||0).toLocaleString('ru-RU'); }
+function _parseMoney(t){
+  if (!t) return 0;
+  const s = String(t).replace(/[^\d.,-]/g,'').replace(/[ \u00A0]/g,'').replace(/,/,'.');
+  return Number(s)||0;
+}
+function renderTable(id, data){
+  const tbody = document.querySelector(id + ' tbody');
+  if (!tbody || !Array.isArray(data)) return;
+  tbody.innerHTML = data.map(row => `
+    <tr data-discount="${row.discount ? '1' : '0'}">
+      <td>${row.name}</td>
+      <td><input type="number" min="${row.min ?? 0}" ${row.max!=null?`max="${row.max}"`:''} step="${row.step || 1}" value="0" data-name="${row.name}"></td>
+      <td>${row.unit || ''}</td>
+      <td class="num price">${row.discount ? '—' : format(row.price) + ' ₽'}</td>
+      <td class="num sum">0 ₽</td>
+    </tr>
+  `).join('');
+}
+function recalcAll(){
+  let subTotal = 0;
+  document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+    const isDiscount = tr.getAttribute('data-discount') === '1';
+    const inp = tr.querySelector('input');
+    const qty = parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0;
+    const unitPrice = isDiscount ? 0 : _parseMoney(tr.querySelector('.price')?.textContent);
+    const sum = isDiscount ? 0 : Math.max(0, qty) * unitPrice;
+    const sumCell = tr.querySelector('.sum');
+    if (sumCell){
+      sumCell.textContent = (isDiscount ? 0 : sum).toLocaleString('ru-RU') + ' ₽';
+      sumCell.dataset.sum = String(isDiscount ? 0 : sum);
+    }
+    if (!isDiscount) subTotal += sum || 0;
+  });
+  // Discount rows
+  let discountTotal = 0;
+  document.querySelectorAll('#table-extra tbody tr[data-discount="1"]').forEach(tr => {
+    const inp = tr.querySelector('input');
+    const pct = Math.min(100, Math.max(0, parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0));
+    const amount = Math.round(subTotal * pct) / 100;
+    const sumCell = tr.querySelector('.sum');
+    if (sumCell){
+      sumCell.textContent = '−' + (amount || 0).toLocaleString('ru-RU') + ' ₽';
+      sumCell.dataset.sum = String(-(amount || 0));
+    }
+    discountTotal += amount || 0;
+  });
+  const total = Math.max(0, subTotal - discountTotal);
+  const grand = document.getElementById('grand-total');
+  if (grand) grand.textContent = (total || 0).toLocaleString('ru-RU');
+}
+function buildEstimate(){
+  recalcAll();
+  const rows = [];
+  let subTotal = 0;
+  let discountPct = 0;
+  let discountAmount = 0;
+  document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+    const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
+    const qty  = parseFloat(tr.querySelector('input')?.value.replace(',', '.') || '0') || 0;
+    const unit = tr.querySelector('td:nth-child(3)')?.textContent.trim() || '';
+    const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
+    const isDiscount = tr.getAttribute('data-discount') === '1';
+    if (isDiscount){
+      discountPct = Math.min(100, Math.max(0, qty));
+      const amount = Math.round(subTotal * discountPct)/100;
+      discountAmount = amount;
+    } else {
+      const sum  = _parseMoney(tr.querySelector('.sum')?.textContent);
+      if (qty > 0 && sum > 0) rows.push({name, qty, unit, unitPrice, sum});
+      subTotal += sum || 0;
+    }
+  });
+  const wrap = document.getElementById('estimate-body');
+  if (!wrap) return;
+  if (!rows.length && discountPct <= 0){
+    wrap.innerHTML = '<p class="kicker">Пока ничего не выбрано. Укажите количество и нажмите «Рассчёт».</p>';
+  } else {
+    const items = rows.map(r => (
+      `<tr>
+        <td>${r.name}</td>
+        <td style="text-align:center;">${r.qty} ${r.unit}</td>
+        <td style="white-space:nowrap;">${r.unitPrice.toLocaleString('ru-RU')} ₽</td>
+        <td style="white-space:nowrap; text-align:right;"><b>${r.sum.toLocaleString('ru-RU')} ₽</b></td>
+      </tr>`)
+    ).join('');
+    const discRow = discountPct > 0 ? `<tr>
+      <td colspan="3" style="text-align:right;">Скидка ${discountPct}%</td>
+      <td style="white-space:nowrap; text-align:right; color:#a3e635;">−${discountAmount.toLocaleString('ru-RU')} ₽</td>
+    </tr>` : '';
+    const final = Math.max(0, subTotal - discountAmount);
+    wrap.innerHTML = `
+      <div class="kicker" style="margin-bottom:8px;">Автосформированный расчёт</div>
+      <div style="overflow:auto;">
+        <table class="calc-table">
+          <thead><tr><th>Позиция</th><th>Кол-во</th><th>Цена ед.</th><th>Сумма</th></tr></thead>
+          <tbody>${items}
+            <tr><td colspan="3" style="text-align:right;"><b>Итого</b></td><td style="text-align:right;"><b>${subTotal.toLocaleString('ru-RU')} ₽</b></td></tr>
+            ${discRow}
+            <tr><td colspan="3" style="text-align:right;"><b>Итого со скидкой</b></td><td style="text-align:right;"><b>${final.toLocaleString('ru-RU')} ₽</b></td></tr>
+          </tbody>
+        </table>
+      </div>`;
+  }
+  document.getElementById('estimate')?.classList.remove('hidden');
+}
+function attachCalc(){
+  if (typeof MAIN !== 'undefined') renderTable('#table-main', MAIN);
+  if (typeof EXTRA !== 'undefined') renderTable('#table-extra', EXTRA);
+  document.querySelectorAll('input[type="number"]').forEach(inp => {
+    inp.addEventListener('input', recalcAll);
+    inp.addEventListener('change', recalcAll);
+  });
+  document.getElementById('btn-recalc')?.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); });
+  document.getElementById('btn-copy')?.addEventListener('click', async ()=>{
+    recalcAll(); buildEstimate();
+    try{ await navigator.clipboard.writeText(document.querySelector('#estimate-body')?.innerText || ''); alert('Смета скопирована'); }catch(e){}
+  });
+  document.getElementById('btn-pdf')?.addEventListener('click', ()=>{
+    recalcAll(); buildEstimate();
+    const win = window.open('', '_blank'); if (!win) return;
+    const html = document.querySelector('#estimate-body')?.innerHTML || '<p>Смета пуста</p>';
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Расчёт</title>
+    <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;}th{text-align:left}</style></head><body><h2>Расчёт</h2>${html}</body></html>`);
+    win.document.close(); setTimeout(()=>win.print(), 300);
+  });
+  recalcAll();
+}
+document.addEventListener('DOMContentLoaded', attachCalc);
