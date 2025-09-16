@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Калькулятор работ — Nord Чеб</title>
-  <link rel="stylesheet" href="style.css?v022">
+  <link rel="stylesheet" href="style.css?v023">
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="dark">
@@ -37,13 +37,11 @@
       </table>
 
       <div class="total-line"><b>Итого:</b> <span id="grand-total">0</span> ₽</div>
-<div class="discount-wrap" style="display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin-top:8px;"><label for="discount-input" class="kicker" style="margin-right:6px;">Персональная скидка, %</label><input id="discount-input" type="number" min="0" max="100" step="1" value="0" style="width:110px; padding:10px 12px; border-radius:12px; border:2px solid; border-color: var(--input-border,#000); background: var(--input-bg,transparent); color: inherit; font-size:16px;"></div>
-<div class="kicker" id="discount-line" style="display:none; text-align:right; margin-top:6px;">Скидка <b><span id="discount-pct">0</span>%</b>: −<b><span id="discount-amount">0</span> ₽</b>. Итого со скидкой: <b><span id="grand-with-discount">0</span> ₽</b></div>
 
       <div class="est-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap;">
-        <button id="btn-estimate" class="btn-outline" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
-        <button id="btn-copy-estimate" class="btn-outline" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;" id="btn-copy">Скопировать</button>
-        <button id="btn-estimate-pdf" class="btn-outline" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;" id="btn-pdf">Скачать PDF</button>
+        <button id="btn-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
+        <button id="btn-copy-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#1e90ff,#00bcd4);" id="btn-copy">Скопировать</button>
+        <button id="btn-estimate-pdf" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#4caf50,#8bc34a);" id="btn-pdf">Скачать PDF</button>
       </div>
       <div id="estimate" class="container hidden" style="margin-top:12px;">
         <h2 style="margin:0 0 8px;">Смета</h2>
@@ -58,9 +56,9 @@
 
   <div id="scrollFab" class="scroll-fab" role="button" aria-label="Прокрутить страницу" title="Вверх">↑</div>
 
-  <footer>Версия сборки: v022• 2025-09-16 08:52:08 (MSK) • © Вано 2025</footer>
+  <footer>Версия сборки: 16.09.2025-023//11:59:06</footer>
 
-  <script src="script.js?v022"></script>
+  <script src="script.js?v023"></script>
   <script>
   // Данные — MAIN и EXTRA
   const MAIN = [
