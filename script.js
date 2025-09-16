@@ -189,3 +189,43 @@ function initScrollFab(){
   });
 }
 document.addEventListener('DOMContentLoaded', initScrollFab);
+
+/* --- Safety calc layer v012 --- */
+(function(){
+  function _parseMoney(t){ if (!t) return 0; return Number(String(t).replace(/[^\d.,]/g,'').replace(/,/g,'.').replace(/\.(?=.*\.)/g,'').replace(/\D/g,'')) || 0; }
+  function recalc(){
+    var total = 0;
+    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(function(tr){
+      var inp = tr.querySelector('input[type="number"]');
+      var qty = 0;
+      if (inp){
+        var val = String(inp.value||'0').replace(',', '.');
+        qty = parseFloat(val) || 0;
+      }
+      var priceCell = tr.querySelector('.price');
+      var sumCell = tr.querySelector('.sum');
+      var unitPrice = 0;
+      if (priceCell){
+        unitPrice = Number(String(priceCell.textContent).replace(/[^\d]/g,''));
+      }
+      var sum = qty * unitPrice;
+      if (sumCell){
+        sumCell.textContent = (sum||0).toLocaleString('ru-RU') + ' ₽';
+        sumCell.dataset.sum = String(sum||0);
+      }
+      total += sum||0;
+    });
+    var g = document.getElementById('grand-total');
+    if (g) g.textContent = (total||0).toLocaleString('ru-RU');
+  }
+  function onReady(){
+    document.addEventListener('input', function(e){
+      if (e.target && e.target.matches('#table-main input[type="number"], #table-extra input[type="number"]')) recalc();
+    }, true);
+    var btn = document.getElementById('btn-recalc') || document.getElementById('btn-estimate');
+    if (btn){ btn.addEventListener('click', function(){ recalc(); }); }
+    recalc();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady);
+  else onReady();
+})();
