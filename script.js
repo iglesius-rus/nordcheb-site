@@ -190,42 +190,71 @@ function initScrollFab(){
 }
 document.addEventListener('DOMContentLoaded', initScrollFab);
 
-/* --- Safety calc layer v012 --- */
-(function(){
-  function _parseMoney(t){ if (!t) return 0; return Number(String(t).replace(/[^\d.,]/g,'').replace(/,/g,'.').replace(/\.(?=.*\.)/g,'').replace(/\D/g,'')) || 0; }
-  function recalc(){
-    var total = 0;
-    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(function(tr){
-      var inp = tr.querySelector('input[type="number"]');
-      var qty = 0;
-      if (inp){
-        var val = String(inp.value||'0').replace(',', '.');
-        qty = parseFloat(val) || 0;
-      }
-      var priceCell = tr.querySelector('.price');
-      var sumCell = tr.querySelector('.sum');
-      var unitPrice = 0;
-      if (priceCell){
-        unitPrice = Number(String(priceCell.textContent).replace(/[^\d]/g,''));
-      }
-      var sum = qty * unitPrice;
-      if (sumCell){
-        sumCell.textContent = (sum||0).toLocaleString('ru-RU') + ' ₽';
-        sumCell.dataset.sum = String(sum||0);
-      }
-      total += sum||0;
-    });
-    var g = document.getElementById('grand-total');
-    if (g) g.textContent = (total||0).toLocaleString('ru-RU');
+/* Discount helpers */
+function getDiscountPct(){
+  const el = document.getElementById('discount-input');
+  if (!el) return 0;
+  const v = parseFloat(String(el.value).replace(',', '.')) || 0;
+  return Math.min(100, Math.max(0, v));
+}
+function applyDiscountToTotal(total){
+  const pct = getDiscountPct();
+  const discount = Math.round(total * pct) / 100; // integer rubles ok
+  const withDisc = Math.max(0, total - discount);
+  const line = document.getElementById('discount-line');
+  const dp = document.getElementById('discount-pct');
+  const da = document.getElementById('discount-amount');
+  const gw = document.getElementById('grand-with-discount');
+  if (line){
+    if (pct > 0){
+      line.style.display = '';
+      if (dp) dp.textContent = pct.toLocaleString('ru-RU');
+      if (da) da.textContent = discount.toLocaleString('ru-RU');
+      if (gw) gw.textContent = withDisc.toLocaleString('ru-RU');
+    } else {
+      line.style.display = 'none';
+    }
   }
-  function onReady(){
-    document.addEventListener('input', function(e){
-      if (e.target && e.target.matches('#table-main input[type="number"], #table-extra input[type="number"]')) recalc();
-    }, true);
-    var btn = document.getElementById('btn-recalc') || document.getElementById('btn-estimate');
-    if (btn){ btn.addEventListener('click', function(){ recalc(); }); }
-    recalc();
+  return {discount, withDisc, pct};
+}
+
+function _estimateToPlainText(){
+  const tbody = document.querySelector('#estimate-body tbody');
+  if (!tbody) return 'Смета пуста';
+  const rows = [];
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length === 4){
+      rows.push(`${tds[0].textContent.trim()} — ${tds[1].textContent.trim()} × ${tds[2].textContent.trim()} = ${tds[3].textContent.trim()}`);
+    } else if (tds.length === 2){
+      rows.push(`${tds[0].textContent.trim()} = ${tds[1].textContent.trim()}`);
+    }
+  });
+  return rows.join('\n');
+}
+async function copyEstimateText(){
+  try {
+    const txt = _estimateToPlainText();
+    await navigator.clipboard.writeText(txt);
+    alert('Смета скопирована в буфер обмена');
+  } catch(e){
+    alert('Не удалось скопировать смету: ' + e);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady);
-  else onReady();
-})();
+}
+function downloadPDF(){
+  // Печать в PDF через системный диалог печати
+  const win = window.open('', '_blank');
+  if (!win) { alert('Разрешите всплывающие окна для печати в PDF'); return; }
+  const html = document.querySelector('#estimate-body').innerHTML || '<p>Смета пуста</p>';
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Расчёт</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;padding:20px;}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #ccc;padding:8px;}
+    th{text-align:left}
+    .right{text-align:right}
+  </style></head><body><h2>Расчёт</h2>${html}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 300);
+}
