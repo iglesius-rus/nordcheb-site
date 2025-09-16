@@ -2,13 +2,13 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; padding:0; background: var(--bg); color: var(--text); transition: background .25s, color .25s; line-height:1.45;}
-
 :root { --header:#f5f5f5; --bg:var(--header); --text:#222; --muted:#0008; }
 body.dark { --header:#1e1e1e; --bg:var(--header); --text:#f5f5f5; --muted:#fff8; }
 
 /* Шапка */
 header {background: var(--header); padding: 10px; position: sticky; top:0; z-index:10; display:flex; justify-content:center; align-items:center; border-bottom:1px solid #0001;}
 .logo {height: 70px; object-fit: contain;}
+.logo-link {display:inline-flex;}
 #theme-toggle {position:absolute; right:10px; top:50%; transform: translateY(-50%); padding:10px 12px; font-size:16px; cursor:pointer; border-radius:12px; transition: border-color .25s, color .25s, background .25s; background: var(--header);}
 body:not(.dark) #theme-toggle {border:1px solid #0003; color:#111;}
 body.dark #theme-toggle {border:1px solid #fff3; color:#f5f5f5;}
@@ -31,6 +31,7 @@ h1,h2,h3 {margin:.6em 0 .4em;}
 h2 {font-size: clamp(22px, 4.6vw, 32px);}
 h3 {font-size: clamp(18px, 3.8vw, 22px);}
 p, li {font-size: clamp(15px, 3.6vw, 18px);}
+.kicker {font-size:13px; opacity:.8;}
 
 /* Контакты */
 .contacts a {text-decoration: underline;}
@@ -39,19 +40,32 @@ body.dark .contacts a {color:#1e90ff;}
 /* Контейнеры */
 .container {max-width: 980px; margin: 12px auto 24px; padding: 16px; background:#fff; border-radius: 14px; border:1px solid #0001;}
 body.dark .container {background:#151515; border-color:#fff1;}
-.kicker {font-size:13px; opacity:.8;}
 
-/* Калькулятор */
-.calc-note {font-size:12px; opacity:.75; margin-top:8px;}
+/* Калькулятор (стоимости) */
 .calc-table {width:100%; border-collapse: collapse; margin-top:10px;}
-.calc-table th, .calc-table td {border-bottom:1px solid #0001; padding:10px;}
+.calc-table th, .calc-table td {border-bottom:1px solid #0001; padding:10px; vertical-align: middle;}
 .calc-table th {text-align:left; opacity:.8; font-weight:700;}
-.calc-table input[type="number"] {width:120px; padding:10px 12px; border-radius:12px; border:1px solid #0002; background:transparent; color:inherit; font-size:16px;}
-.calc-table .price, .calc-table .sum {white-space:nowrap;}
+.calc-table input[type="number"] {width: 68px; text-align:center; padding:10px 12px; border-radius:12px; border:2px solid; border-color: var(--input-border, #000); background: var(--input-bg, transparent); color:inherit; font-size:16px;}
+body.dark .calc-table input[type="number"] { --input-border:#fff; --input-bg:#0f0f0f; }
+body:not(.dark) .calc-table input[type="number"] { --input-border:#000; --input-bg:#fff; }
 .total-line {text-align:right; font-size:20px; margin-top:12px; font-weight:700;}
 
-.badge {display:inline-block; font-size:12px; padding:4px 10px; border-radius:999px; background:#eef5ff; color:#134;}
-body.dark .badge {background:#0f1a24; color:#e7f3ff;}
+/* Power calculator inputs */
+#powercalc input[type="number"]{ width: 100%; padding: 10px 12px; border-radius: 12px; border: 2px solid; border-color: var(--input-border, #000); background: var(--input-bg, transparent); color: inherit; font-size: 16px; margin-top: 6px;}
+
+/* FAB scroll */
+.scroll-fab{
+  position: fixed; left: 16px; bottom: 16px; width: 48px; height: 48px;
+  display: grid; place-items: center; font-size: 22px; line-height: 1;
+  border-radius: 9999px; cursor: pointer; user-select: none; z-index: 50;
+  background: var(--header); color: var(--text);
+  border: 1px solid; border-color: rgba(0,0,0,.2);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  transition: transform .15s ease, box-shadow .2s ease, background .25s ease, color .25s ease, border-color .25s ease;
+}
+body.dark .scroll-fab{ border-color: rgba(255,255,255,.2); }
+.scroll-fab:hover{ transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.22); }
+.scroll-fab:active{ transform: translateY(0); }
 
 /* Мобильная адаптация */
 @media (max-width: 720px) {
@@ -68,53 +82,9 @@ body.dark .badge {background:#0f1a24; color:#e7f3ff;}
   .calc-table td {border:none; display:flex; justify-content:space-between; align-items:center; padding:8px 0;}
   .calc-table td::before {content: attr(data-label); font-size:13px; opacity:.7; margin-right:12px; flex: 1 1 auto; text-align:left;}
   .calc-table td > *:not(:first-child) {margin-left:12px;}
-  .calc-table input[type="number"] {width:110px;}
+  .calc-table input[type="number"] {width:60px;}
 }
 
-/* Reduce motion */
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
-}
-
-
-
-/* ===== Поля ввода: постоянная рамка + подсветка при фокусе ===== */
-input[type="number"],
-input[type="text"],
-input[type="tel"],
-input[type="email"] {
-  -webkit-appearance: none;
-  appearance: none;
-  border: 2px solid var(--input-border);
-  border-radius: 12px;
-  padding: 10px 14px;
-  background: var(--input-bg);
-  color: inherit;
-  box-shadow: none;
-  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
-  caret-color: currentColor;
-}
-
-body.dark {
-  --input-border: rgba(255,255,255,.9);
-  --input-bg: #0f0f0f;
-}
-body:not(.dark) {
-  --input-border: rgba(0,0,0,.9);
-  --input-bg: #ffffff;
-}
-
-input[type="number"]:focus,
-input[type="text"]:focus,
-input[type="tel"]:focus,
-input[type="email"]:focus {
-  outline: none;
-  border-color: #1e90ff;
-  box-shadow: 0 0 10px rgba(30,144,255,.55);
-}
-
-/* Обнулим прежние слабые рамки, если где-то заданы */
-.calc-table input[type="number"] {
-  border: 2px solid var(--input-border) !important;
-  background: var(--input-bg) !important;
-}
+/* Utility */
+.hidden{display:none !important;}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
