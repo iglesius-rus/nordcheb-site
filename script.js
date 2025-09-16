@@ -34,8 +34,14 @@ restoreState();
 
 // ===== Калькулятор стоимости =====
 function format(n) { return n.toLocaleString('ru-RU'); }
-function _parseMoney(text){ const d = String(text||'').replace(/[^\d]/g,''); return d?parseInt(d,10):0; }
-
+function _parseMoney(t){
+  if (!t) return 0;
+  const s = String(t)
+    .replace(/[^\d.,-]/g,'')
+    .replace(/[ \u00A0]/g,'')
+    .replace(/,/,'.');
+  return Number(s) || 0;
+}
 function rowHTML(r){
   return `
     <tr>
@@ -258,3 +264,132 @@ function downloadPDF(){
   win.focus();
   setTimeout(() => win.print(), 300);
 }
+
+
+/* ===== Safe layer: robust wiring and discount handling ===== */
+(function(){
+  function getDiscountPct(){
+    const el = document.getElementById('discount-input');
+    if (!el) return 0;
+    const v = parseFloat(String(el.value).replace(',', '.')) || 0;
+    return Math.min(100, Math.max(0, v));
+  }
+  function applyDiscountToTotal(total){
+    const pct = getDiscountPct();
+    const discount = Math.round(total * pct) / 100;
+    const withDisc = Math.max(0, total - discount);
+    const line = document.getElementById('discount-line');
+    const dp = document.getElementById('discount-pct');
+    const da = document.getElementById('discount-amount');
+    const gw = document.getElementById('grand-with-discount');
+    if (line){
+      if (pct > 0){
+        line.style.display = '';
+        if (dp) dp.textContent = pct.toLocaleString('ru-RU');
+        if (da) da.textContent = discount.toLocaleString('ru-RU');
+        if (gw) gw.textContent = withDisc.toLocaleString('ru-RU');
+      } else {
+        line.style.display = 'none';
+      }
+    }
+    return {discount, withDisc, pct};
+  }
+  function recalcAll(){
+    let total = 0;
+    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+      const inp = tr.querySelector('input');
+      const qty = parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0;
+      const price = _parseMoney(tr.querySelector('.price')?.textContent);
+      const sum = Math.max(0, qty) * price;
+      const cell = tr.querySelector('.sum');
+      if (cell){
+        cell.textContent = (sum || 0).toLocaleString('ru-RU') + ' ₽';
+        cell.dataset.sum = String(sum || 0);
+      }
+      total += sum || 0;
+    });
+    const grand = document.getElementById('grand-total');
+    if (grand) grand.textContent = (total || 0).toLocaleString('ru-RU');
+    applyDiscountToTotal(total);
+  }
+  function buildEstimate(){
+    recalcAll();
+    const rows = [];
+    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+      const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
+      const qty  = parseFloat(tr.querySelector('input')?.value.replace(',', '.') || '0') || 0;
+      const unit = tr.querySelector('td:nth-child(3)')?.textContent.trim() || '';
+      const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
+      const sum  = _parseMoney(tr.querySelector('.sum')?.textContent);
+      if (qty > 0 && sum > 0) rows.push({name, qty, unit, unitPrice, sum});
+    });
+    const wrap = document.getElementById('estimate-body');
+    if (!wrap) return;
+    if (!rows.length){
+      wrap.innerHTML = '<p class="kicker">Пока ничего не выбрано. Укажите количество и нажмите «Рассчёт».</p>';
+    } else {
+      let total = 0;
+      const items = rows.map(r => { total += r.sum; return (
+        `<tr>
+          <td>${r.name}</td>
+          <td style="text-align:center;">${r.qty} ${r.unit}</td>
+          <td style="white-space:nowrap;">${r.unitPrice.toLocaleString('ru-RU')} ₽</td>
+          <td style="white-space:nowrap; text-align:right;"><b>${r.sum.toLocaleString('ru-RU')} ₽</b></td>
+        </tr>`);
+      }).join('');
+      const disc = applyDiscountToTotal(total);
+      const discRow = disc.pct > 0 ? `<tr>
+        <td colspan="3" style="text-align:right;">Скидка ${disc.pct}%</td>
+        <td style="white-space:nowrap; text-align:right; color:#a3e635;">−${disc.discount.toLocaleString('ru-RU')} ₽</td>
+      </tr>` : '';
+      const finalRow = `<tr>
+        <td colspan="3" style="text-align:right;"><b>Итого со скидкой</b></td>
+        <td style="white-space:nowrap; text-align:right;"><b>${(disc.withDisc || total).toLocaleString('ru-RU')} ₽</b></td>
+      </tr>`;
+      wrap.innerHTML = `
+        <div class="kicker" style="margin-bottom:8px;">Автосформированный расчёт</div>
+        <div style="overflow:auto;">
+          <table class="calc-table">
+            <thead><tr><th>Позиция</th><th>Кол-во</th><th>Цена ед.</th><th>Сумма</th></tr></thead>
+            <tbody>${items}
+              <tr><td colspan="3" style="text-align:right;"><b>Итого</b></td><td style="text-align:right;"><b>${total.toLocaleString('ru-RU')} ₽</b></td></tr>
+              ${discRow}
+              ${finalRow}
+            </tbody>
+          </table>
+        </div>`;
+    }
+    document.getElementById('estimate')?.classList.remove('hidden');
+  }
+  function copyEstimateText(){
+    try{
+      const txt = document.querySelector('#estimate-body')?.innerText || 'Смета пуста';
+      navigator.clipboard.writeText(txt);
+      alert('Смета скопирована в буфер обмена');
+    }catch(e){ alert('Не удалось скопировать смету: ' + e); }
+  }
+  function downloadPDF(){
+    const win = window.open('', '_blank');
+    if (!win) { alert('Разрешите всплывающие окна для печати в PDF'); return; }
+    const html = document.querySelector('#estimate-body')?.innerHTML || '<p>Смета пуста</p>';
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Расчёт</title>
+    <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;}th{text-align:left}.right{text-align:right}</style></head><body><h2>Расчёт</h2>${html}</body></html>`);
+    win.document.close(); win.focus(); setTimeout(()=>win.print(), 300);
+  }
+  function wire(){
+    document.querySelectorAll('input[type="number"]').forEach(inp => {
+      inp.oninput = recalcAll;
+      inp.onchange = recalcAll;
+    });
+    const btnRe = document.getElementById('btn-recalc') || [...document.querySelectorAll('button, .btn')].find(b=>/расч[её]т/i.test(b.textContent||''));
+    const btnCp = document.getElementById('btn-copy')   || [...document.querySelectorAll('button, .btn')].find(b=>/копир/i.test(b.textContent||''));
+    const btnPdf= document.getElementById('btn-pdf')    || [...document.querySelectorAll('button, .btn')].find(b=>/pdf|скачать/i.test(b.textContent||''));
+    if (btnRe && !btnRe._wired){ btnRe.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); }); btnRe._wired = true; }
+    if (btnCp && !btnCp._wired){ btnCp.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); copyEstimateText(); }); btnCp._wired = true; }
+    if (btnPdf&& !btnPdf._wired){btnPdf.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); downloadPDF(); }); btnPdf._wired = true; }
+    const disc = document.getElementById('discount-input'); if (disc && !disc._wired){ disc.addEventListener('input', recalcAll); disc._wired = true; }
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{ wire(); recalcAll(); });
+  const mo = new MutationObserver(()=> wire());
+  mo.observe(document.body, {childList:true, subtree:true});
+})();
