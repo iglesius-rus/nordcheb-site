@@ -68,8 +68,9 @@ function recalc(){
     const inp = tr.querySelector('input[type="number"]');
     if (!inp) return;
     const qty = parseInt(inp.value || '0', 10) || 0;
-    const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
-    const sum = Math.max(0, qty) * unitPrice;
+    const per = Number(tr.dataset.per || 1);
+    const unitPriceRaw = Number(tr.dataset.price || _parseMoney(tr.querySelector('.price')?.textContent));
+    const sum = Math.max(0, qty) * (unitPriceRaw / per);
     const sumCell = tr.querySelector('.sum');
     if (sumCell){ sumCell.dataset.sum = sum; sumCell.textContent = format(sum) + ' ₽'; }
     total += sum;
@@ -90,7 +91,10 @@ function buildEstimate(){
   document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
     const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
     const qty  = parseInt(tr.querySelector('input')?.value || '0', 10) || 0;
-    const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
+    const per = Number(tr.dataset.per || 1);
+    const unit = tr.querySelector('td:nth-child(3)')?.textContent.trim() || '';
+    const unitPriceRaw = Number(tr.dataset.price || _parseMoney(tr.querySelector('.price')?.textContent));
+    const unitPrice = unitPriceRaw / per;
     const sum  = _parseMoney(tr.querySelector('.sum')?.textContent);
     if (qty > 0 && sum > 0) rows.push({name, qty, unitPrice, sum});
   });
