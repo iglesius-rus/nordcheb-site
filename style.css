@@ -88,3 +88,10 @@ body.dark .scroll-fab{ border-color: rgba(255,255,255,.2); }
 /* Utility */
 .hidden{display:none !important;}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* v017 themed outline buttons */
+.btn { border:2px solid var(--fg); background:transparent; color:var(--fg); border-radius:14px; padding:12px 16px; transition:background .2s, color .2s, border-color .2s; }
+.btn:active { transform: translateY(1px); }
+body:not(.dark) .btn { border-color:#111; color:#111; }
+.btn:hover { background:rgba(255,255,255,0.06); }
+body:not(.dark) .btn:hover { background:rgba(0,0,0,0.06); }

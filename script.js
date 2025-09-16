@@ -439,3 +439,43 @@ const disc = document.getElementById('discount-input'); if (disc && !disc._wired
   const mo = new MutationObserver(()=> wire());
   mo.observe(document.body, {childList:true, subtree:true});
 })();
+
+/* ===== Bulletproof init to ensure tables render ===== */
+(function(){
+  function safeRender(){
+    try {
+      if (typeof renderTable === 'function') {
+        if (typeof MAIN !== 'undefined' && document.querySelector('#table-main tbody')?.children.length === 0) {
+          renderTable('#table-main', MAIN);
+        }
+        if (typeof EXTRA !== 'undefined' && document.querySelector('#table-extra tbody')?.children.length === 0) {
+          renderTable('#table-extra', EXTRA);
+        }
+      } else {
+        // fallback simple renderer
+        function _r(selector, data){
+          const tbody = document.querySelector(selector + ' tbody');
+          if (!tbody || !Array.isArray(data)) return;
+          tbody.innerHTML = data.map(row => `
+            <tr data-discount="${row.discount ? '1' : '0'}">
+              <td>${row.name}</td>
+              <td><input type="number" min="${row.min ?? 0}" max="${row.max ?? ''}" step="${row.step || 1}" value="0"></td>
+              <td>${row.unit || ''}</td>
+              <td class="num price">${row.discount ? '—' : (row.price || 0).toLocaleString('ru-RU') + ' ₽'}</td>
+              <td class="num sum">0 ₽</td>
+            </tr>`).join('');
+        }
+        if (typeof MAIN !== 'undefined') _r('#table-main', MAIN);
+        if (typeof EXTRA !== 'undefined') _r('#table-extra', EXTRA);
+      }
+      if (typeof recalcAll === 'function') recalcAll();
+    } catch(e){ console && console.error('init error:', e); }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', safeRender);
+  } else {
+    safeRender();
+  }
+  setTimeout(safeRender, 300); // second pass after other scripts
+})();
+/* ===== End bulletproof init ===== */
