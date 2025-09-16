@@ -294,64 +294,109 @@ function downloadPDF(){
     }
     return {discount, withDisc, pct};
   }
-  function recalcAll(){
-    let total = 0;
-    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
-      const inp = tr.querySelector('input');
-      const qty = parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0;
-      const price = _parseMoney(tr.querySelector('.price')?.textContent);
-      const sum = Math.max(0, qty) * price;
-      const cell = tr.querySelector('.sum');
-      if (cell){
-        cell.textContent = (sum || 0).toLocaleString('ru-RU') + ' ₽';
-        cell.dataset.sum = String(sum || 0);
-      }
+  
+function recalcAll(){
+  let subTotal = 0;
+  // First pass: compute sums for normal rows
+  document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+    const isDiscount = tr.getAttribute('data-discount') === '1';
+    const inp = tr.querySelector('input');
+    const qty = parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0;
+    const priceCell = tr.querySelector('.price');
+    const unitPrice = isDiscount ? 0 : _parseMoney(priceCell && priceCell.textContent);
+    const sum = isDiscount ? 0 : (Math.max(0, qty) * unitPrice);
+    const sumCell = tr.querySelector('.sum');
+    if (sumCell){
+      sumCell.textContent = (sum || 0).toLocaleString('ru-RU') + ' ₽';
+      sumCell.dataset.sum = String(sum || 0);
+    }
+    if (!isDiscount) subTotal += sum || 0;
+  });
+  // Second pass: apply discount rows
+  let discountTotal = 0;
+  document.querySelectorAll('#table-extra tbody tr[data-discount="1"]').forEach(tr => {
+    const inp = tr.querySelector('input');
+    const pct = Math.min(100, Math.max(0, parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0));
+    const amount = Math.round(subTotal * pct) / 100;
+    const sumCell = tr.querySelector('.sum');
+    if (sumCell){
+      sumCell.textContent = '−' + (amount || 0).toLocaleString('ru-RU') + ' ₽';
+      sumCell.dataset.sum = String(-amount || 0);
+    }
+    discountTotal += amount || 0;
+  });
+  const total = Math.max(0, subTotal - discountTotal);
+  const grand = document.getElementById('grand-total');
+  if (grand) grand.textContent = (total || 0).toLocaleString('ru-RU');
+}
       total += sum || 0;
     });
     const grand = document.getElementById('grand-total');
     if (grand) grand.textContent = (total || 0).toLocaleString('ru-RU');
     applyDiscountToTotal(total);
   }
-  function buildEstimate(){
-    recalcAll();
-    const rows = [];
-    document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
-      const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
-      const qty  = parseFloat(tr.querySelector('input')?.value.replace(',', '.') || '0') || 0;
-      const unit = tr.querySelector('td:nth-child(3)')?.textContent.trim() || '';
-      const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
+  
+function buildEstimate(){
+  // Ensure sums are fresh
+  recalcAll();
+  const rows = [];
+  let subTotal = 0;
+  let discountPct = 0;
+  let discountAmount = 0;
+  document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
+    const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
+    const qty  = parseFloat(tr.querySelector('input')?.value.replace(',', '.') || '0') || 0;
+    const unit = tr.querySelector('td:nth-child(3)')?.textContent.trim() || '';
+    const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
+    const isDiscount = tr.getAttribute('data-discount') === '1';
+    if (isDiscount){
+      discountPct = Math.min(100, Math.max(0, qty));
+      const sumCellVal = _parseMoney(tr.querySelector('.sum')?.textContent);
+      discountAmount = Math.abs(sumCellVal);
+    } else {
       const sum  = _parseMoney(tr.querySelector('.sum')?.textContent);
       if (qty > 0 && sum > 0) rows.push({name, qty, unit, unitPrice, sum});
-    });
-    const wrap = document.getElementById('estimate-body');
-    if (!wrap) return;
-    if (!rows.length){
-      wrap.innerHTML = '<p class="kicker">Пока ничего не выбрано. Укажите количество и нажмите «Рассчёт».</p>';
-    } else {
-      let total = 0;
-      const items = rows.map(r => { total += r.sum; return (
-        `<tr>
-          <td>${r.name}</td>
-          <td style="text-align:center;">${r.qty} ${r.unit}</td>
-          <td style="white-space:nowrap;">${r.unitPrice.toLocaleString('ru-RU')} ₽</td>
-          <td style="white-space:nowrap; text-align:right;"><b>${r.sum.toLocaleString('ru-RU')} ₽</b></td>
-        </tr>`);
-      }).join('');
-      const disc = applyDiscountToTotal(total);
-      const discRow = disc.pct > 0 ? `<tr>
-        <td colspan="3" style="text-align:right;">Скидка ${disc.pct}%</td>
-        <td style="white-space:nowrap; text-align:right; color:#a3e635;">−${disc.discount.toLocaleString('ru-RU')} ₽</td>
-      </tr>` : '';
-      const finalRow = `<tr>
-        <td colspan="3" style="text-align:right;"><b>Итого со скидкой</b></td>
-        <td style="white-space:nowrap; text-align:right;"><b>${(disc.withDisc || total).toLocaleString('ru-RU')} ₽</b></td>
-      </tr>`;
-      wrap.innerHTML = `
-        <div class="kicker" style="margin-bottom:8px;">Автосформированный расчёт</div>
-        <div style="overflow:auto;">
-          <table class="calc-table">
-            <thead><tr><th>Позиция</th><th>Кол-во</th><th>Цена ед.</th><th>Сумма</th></tr></thead>
-            <tbody>${items}
+      subTotal += sum || 0;
+    }
+  });
+  const wrap = document.getElementById('estimate-body');
+  if (!wrap) return;
+  if (!rows.length && discountPct <= 0){
+    wrap.innerHTML = '<p class="kicker">Пока ничего не выбрано. Укажите количество и нажмите «Рассчёт».</p>';
+  } else {
+    let total = subTotal;
+    const items = rows.map(r => (
+      `<tr>
+        <td>${r.name}</td>
+        <td style="text-align:center;">${r.qty} ${r.unit}</td>
+        <td style="white-space:nowrap;">${r.unitPrice.toLocaleString('ru-RU')} ₽</td>
+        <td style="white-space:nowrap; text-align:right;"><b>${r.sum.toLocaleString('ru-RU')} ₽</b></td>
+      </tr>`)
+    ).join('');
+    const discRow = discountPct > 0 ? `<tr>
+      <td colspan="3" style="text-align:right;">Скидка ${discountPct}%</td>
+      <td style="white-space:nowrap; text-align:right; color:#a3e635;">−${discountAmount.toLocaleString('ru-RU')} ₽</td>
+    </tr>` : '';
+    const final = (subTotal - discountAmount);
+    const finalRow = `<tr>
+      <td colspan="3" style="text-align:right;"><b>Итого со скидкой</b></td>
+      <td style="white-space:nowrap; text-align:right;"><b>${Math.max(0, final).toLocaleString('ru-RU')} ₽</b></td>
+    </tr>`;
+    wrap.innerHTML = `
+      <div class="kicker" style="margin-bottom:8px;">Автосформированный расчёт</div>
+      <div style="overflow:auto;">
+        <table class="calc-table">
+          <thead><tr><th>Позиция</th><th>Кол-во</th><th>Цена ед.</th><th>Сумма</th></tr></thead>
+          <tbody>${items}
+            <tr><td colspan="3" style="text-align:right;"><b>Итого</b></td><td style="text-align:right;"><b>${subTotal.toLocaleString('ru-RU')} ₽</b></td></tr>
+            ${discRow}
+            ${finalRow}
+          </tbody>
+        </table>
+      </div>`;
+  }
+  document.getElementById('estimate')?.classList.remove('hidden');
+}
               <tr><td colspan="3" style="text-align:right;"><b>Итого</b></td><td style="text-align:right;"><b>${total.toLocaleString('ru-RU')} ₽</b></td></tr>
               ${discRow}
               ${finalRow}
