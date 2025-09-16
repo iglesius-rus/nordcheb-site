@@ -8,6 +8,7 @@ function _parseMoney(t){
 }
 function _get(el, sel){ var x = el.querySelector(sel); return x ? x : null; }
 
+
 function renderTable(id, data){
   var tbody = document.querySelector(id + ' tbody');
   if (!tbody || !Array.isArray(data)) return;
@@ -15,9 +16,13 @@ function renderTable(id, data){
     var min = (row.min != null) ? row.min : 0;
     var max = (row.max != null) ? ('max="'+row.max+'"') : '';
     var step = row.step || 1;
-    var priceCell = row.discount ? '—' : format(row.price) + ' ₽';
+    var priceCell = row.discount ? '—' : (
+      row.editablePrice 
+        ? '<input class="price-input" type="number" min="0" step="50" value="'+(row.price||0)+'" style="width:110px; padding:6px 8px; border-radius:10px; border:1px solid #2a2b2f; background:#111; color:#eaeaea">'
+        : format(row.price) + ' ₽'
+    );
     return '\
-    <tr data-discount="'+(row.discount ? '1':'0')+'">\
+    <tr data-discount="'+(row.discount ? '1':'0')+'" data-editable-price="'+(row.editablePrice? '1':'0')+'">\
       <td>'+row.name+'</td>\
       <td><input type="number" min="'+min+'" '+max+' step="'+step+'" value="0" data-name="'+row.name.replace(/"/g,'&quot;')+'"></td>\
       <td>'+(row.unit || '')+'</td>\
@@ -28,22 +33,46 @@ function renderTable(id, data){
   tbody.innerHTML = out;
 }
 
+
 function recalcAll(){
   var subTotal = 0;
   var rows = document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr');
   for (var i=0;i<rows.length;i++){
     var tr = rows[i];
     var isDiscount = tr.getAttribute('data-discount') === '1';
-    var inp = _get(tr, 'input');
-    var qty = parseFloat(inp && inp.value ? String(inp.value).replace(',', '.') : '0') || 0;
-    var priceEl = _get(tr, '.price');
-    var unitPrice = isDiscount ? 0 : _parseMoney(priceEl ? priceEl.textContent : '');
+    var inp = tr.querySelector('input[type="number"]');
+    // be careful: the first input is qty; price-input has class
+    var qtyInput = tr.querySelector('td:nth-child(2) input[type="number"]');
+    var qty = parseFloat(qtyInput && qtyInput.value ? String(qtyInput.value).replace(',', '.') : '0') || 0;
+    var priceInput = tr.querySelector('.price-input');
+    var unitPrice = isDiscount ? 0 : (priceInput ? (parseFloat(priceInput.value) || 0) : _parseMoney((tr.querySelector('.price') && tr.querySelector('.price').textContent) || ''));
     var sum = isDiscount ? 0 : Math.max(0, qty) * unitPrice;
-    var sumCell = _get(tr, '.sum');
+    var sumCell = tr.querySelector('.sum');
     if (sumCell){
-      sumCell.textContent = format(isDiscount ? 0 : sum) + ' ₽';
+      sumCell.textContent = (isDiscount ? 0 : sum).toLocaleString('ru-RU') + ' ₽';
       sumCell.dataset.sum = String(isDiscount ? 0 : sum);
     }
+    if (!isDiscount) subTotal += sum || 0;
+  }
+  // Discount rows
+  var discountTotal = 0;
+  var drows = document.querySelectorAll('#table-extra tbody tr[data-discount="1"]');
+  for (var j=0;j<drows.length;j++){
+    var dtr = drows[j];
+    var inp2 = dtr.querySelector('td:nth-child(2) input[type="number"]');
+    var pct = Math.min(100, Math.max(0, parseFloat(inp2 && inp2.value ? String(inp2.value).replace(',', '.') : '0') || 0));
+    var amount = Math.round(subTotal * pct) / 100;
+    var sumCell2 = dtr.querySelector('.sum');
+    if (sumCell2){
+      sumCell2.textContent = '−' + (amount || 0).toLocaleString('ru-RU') + ' ₽';
+      sumCell2.dataset.sum = String(-(amount || 0));
+    }
+    discountTotal += amount || 0;
+  }
+  var total = Math.max(0, subTotal - discountTotal);
+  var grand = document.getElementById('grand-total');
+  if (grand) grand.textContent = (total || 0).toLocaleString('ru-RU');
+}
     if (!isDiscount) subTotal += sum || 0;
   }
   var discountTotal = 0;
@@ -129,11 +158,37 @@ function buildEstimate(){
   var est = document.getElementById('estimate'); if (est) est.classList.remove('hidden');
 }
 
+
 function attachCalc(){
   try {
     if (typeof MAIN !== 'undefined') renderTable('#table-main', MAIN);
     if (typeof EXTRA !== 'undefined') renderTable('#table-extra', EXTRA);
   } catch(e) {}
+  var nums = document.querySelectorAll('input[type="number"], .price-input');
+  for (var i=0;i<nums.length;i++){
+    nums[i].addEventListener('input', recalcAll);
+    nums[i].addEventListener('change', recalcAll);
+  }
+  var br = document.getElementById('btn-recalc');
+  if (br) br.addEventListener('click', function(){ recalcAll(); buildEstimate(); });
+  var bc = document.getElementById('btn-copy');
+  if (bc) bc.addEventListener('click', function(){
+    recalcAll(); buildEstimate();
+    var txt = (document.getElementById('estimate-body')||{}).innerText || '';
+    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt); }
+  });
+  var bp = document.getElementById('btn-pdf');
+  if (bp) bp.addEventListener('click', function(){
+    recalcAll(); buildEstimate();
+    var win = window.open('', '_blank'); if (!win) return;
+    var html = (document.getElementById('estimate-body')||{}).innerHTML || '<p>Смета пуста</p>';
+    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Расчёт</title>\
+    <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;}th{text-align:left}</style></head><body><h2>Расчёт</h2>'+html+'</body></html>');
+    win.document.close(); setTimeout(function(){ win.print(); }, 300);
+  });
+  recalcAll();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attachCalc); else attachCalc();
   var nums = document.querySelectorAll('input[type="number"]');
   for (var i=0;i<nums.length;i++){
     nums[i].addEventListener('input', recalcAll);

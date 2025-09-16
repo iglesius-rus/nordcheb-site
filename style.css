@@ -95,3 +95,17 @@ body.dark .scroll-fab{ border-color: rgba(255,255,255,.2); }
 body:not(.dark) .btn { border-color:#111; color:#111; }
 .btn:hover { background:rgba(255,255,255,0.06); }
 body:not(.dark) .btn:hover { background:rgba(0,0,0,0.06); }
+
+
+/* v021 mobile comfort */
+@media (max-width: 480px){
+  body{ font-size:16px; line-height:1.35; }
+  .calc-table{ font-size:13px; }
+  .calc-table th, .calc-table td{ padding:8px 6px; }
+  input[type=number]{ width:100px; padding:8px 10px; font-size:16px; border-radius:10px; }
+  .price-input{ width:120px; padding:8px 10px; font-size:16px; }
+  .actions .btn{ padding:10px 12px; }
+  h1, h2{ font-size:1.2rem; }
+  .grand{ display:block; margin-top:8px; margin-bottom:6px; }
+  .calc-table{ table-layout:auto; word-break:break-word; }
+}
