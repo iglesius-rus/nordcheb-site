@@ -1,2 +1,3 @@
-# NordCheb — v019
-Clean discount-as-row, stable rendering, themed buttons. Built at: 2025-09-16 08:21:55 (MSK)
+# NordCheb — v020
+Относительные пути ./style.css и ./script.js, без optional chaining, единый скрипт.
+Built at: 2025-09-16 08:27:57 (MSK)
