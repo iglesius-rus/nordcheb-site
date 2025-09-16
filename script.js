@@ -85,16 +85,14 @@ function wireCalcInputs(){
 }
 
 // ===== Смета =====
-
 function buildEstimate(){
   const rows = [];
   document.querySelectorAll('#table-main tbody tr, #table-extra tbody tr').forEach(tr => {
     const name = tr.querySelector('td:nth-child(1)')?.textContent.trim() || '';
     const qty  = parseInt(tr.querySelector('input')?.value || '0', 10) || 0;
-    const unit = tr.querySelector('td:nth-child(3)')?.textContent.trim() || '';
     const unitPrice = _parseMoney(tr.querySelector('.price')?.textContent);
     const sum  = _parseMoney(tr.querySelector('.sum')?.textContent);
-    if (qty > 0 && sum > 0) rows.push({name, qty, unit, unitPrice, sum});
+    if (qty > 0 && sum > 0) rows.push({name, qty, unitPrice, sum});
   });
   const wrap = document.getElementById('estimate-body');
   if (!wrap) return;
@@ -105,23 +103,21 @@ function buildEstimate(){
     const items = rows.map(r => { total += r.sum; return (
       `<tr>
         <td>${r.name}</td>
-        <td style="text-align:center;">${r.qty} ${r.unit}</td>
+        <td style="text-align:center;">${r.qty}</td>
         <td style="white-space:nowrap;">${r.unitPrice.toLocaleString('ru-RU')} ₽</td>
         <td style="white-space:nowrap; text-align:right;"><b>${r.sum.toLocaleString('ru-RU')} ₽</b></td>
       </tr>`);
     }).join('');
-    wrap.innerHTML = \`
+    wrap.innerHTML = `
       <div class="kicker" style="margin-bottom:8px;">Автосформированный расчёт</div>
       <div style="overflow:auto;">
         <table class="calc-table">
           <thead><tr><th>Позиция</th><th>Кол-во</th><th>Цена ед.</th><th>Сумма</th></tr></thead>
-          <tbody>\${items}</tbody>
+          <tbody>${items}</tbody>
         </table>
       </div>
-      <div class="total-line" style="margin-top:10px;"><b>Итого по смете:</b> \${total.toLocaleString('ru-RU')} ₽</div>\`;
+      <div class="total-line" style="margin-top:10px;"><b>Итого по смете:</b> ${total.toLocaleString('ru-RU')} ₽</div>`;
   }
-  document.getElementById('estimate')?.classList.remove('hidden');
-}
   document.getElementById('estimate')?.classList.remove('hidden');
 }
 
@@ -133,7 +129,8 @@ function estimateToPlainText(){
     const qty  = tr.children[1]?.textContent.trim() || '';
     const price= tr.children[2]?.textContent.trim() || '';
     const sum  = tr.children[3]?.textContent.trim() || '';
-    rows.push(`${name} — ${qty} × ${price} = ${sum}`);
+    const unit = tr.children[2]?.textContent.trim() || 'шт.';
+    rows.push(`${name} — ${qty} ${unit} × ${price} = ${sum}`);
   });
   const totalLine = wrap.querySelector('.total-line')?.textContent.replace(/\s+/g,' ').trim() || '';
   const address = document.getElementById('estimate-address')?.value?.trim();

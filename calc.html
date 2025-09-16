@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Калькулятор работ — Nord Чеб</title>
-  <link rel="stylesheet" href="style.css?v006">
+  <link rel="stylesheet" href="style.css?v007">
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="dark">
@@ -16,52 +16,61 @@
   </header>
 
   <main>
-    <h1>Калькулятор работ</h1>
-    <p class="kicker">Единицы: <b>п.м.</b> — погонный метр.</p>
+    <div class="container">
+      <h1 style="margin:0 0 8px;">Калькулятор стоимости работ</h1>
+      <div class="kicker">для внутреннего использования</div>
 
-    <section>
-      <h2>Основные работы</h2>
-      <table id="table-main" class="calc-table">
-        <thead><tr><th>Позиция</th><th>Кол-во</th><th>Ед.</th><th class="num">Цена</th><th class="num">Сумма</th></tr></thead>
+      <div class="section-title">Основные работы</div>
+      <table class="calc-table" id="table-main">
+        <thead>
+          <tr><th>Наименование работ</th><th>Кол-во</th><th>Ед. изм.</th><th>Цена ед.</th><th>Цена</th></tr>
+        </thead>
         <tbody></tbody>
       </table>
-    </section>
 
-    <section>
-      <h2>Дополнительные работы</h2>
-      <table id="table-extra" class="calc-table">
-        <thead><tr><th>Позиция</th><th>Кол-во</th><th>Ед.</th><th class="num">Цена</th><th class="num">Сумма</th></tr></thead>
+      <div class="section-title">Дополнительные работы</div>
+      <table class="calc-table" id="table-extra">
+        <thead>
+          <tr><th>Наименование работ</th><th>Кол-во</th><th>Ед. изм.</th><th>Цена ед.</th><th>Цена</th></tr>
+        </thead>
         <tbody></tbody>
       </table>
-    </section>
 
-    <div class="actions">
-      <button id="btn-recalc" class="btn">Рассчёт</button>
-      <span class="grand">Итого: <b><span id="grand-total">0</span> ₽</b></span>
+      <div class="total-line"><b>Итого:</b> <span id="grand-total">0</span> ₽</div>
+
+      <div class="est-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap;">
+        <button id="btn-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчёт</button>
+        <button id="btn-copy-estimate" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#1e90ff,#00bcd4);">Скопировать</button>
+        <button id="btn-estimate-pdf" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#4caf50,#8bc34a);">Скачать PDF</button>
+      </div>
+      <div id="estimate" class="container hidden" style="margin-top:12px;">
+        <h2 style="margin:0 0 8px;">Смета</h2>
+        <div id="estimate-body">Пока ничего не выбрано.</div>
+        <div class="est-meta" style="margin-top:12px;">
+          <label for="estimate-address" style="display:block;font-size:14px;opacity:.85;margin-bottom:6px;">Адрес:</label>
+          <input id="estimate-address" type="text" placeholder="Укажите адрес объекта" style="width:100%;max-width:600px;">
+        </div>
+      </div>
     </div>
-
-    <section id="estimate" class="hidden">
-      <h2>Смета</h2>
-      <div id="estimate-body"></div>
-    </section>
   </main>
 
   <div id="scrollFab" class="scroll-fab" role="button" aria-label="Прокрутить страницу" title="Вверх">↑</div>
 
-  <footer>Версия сборки: v006 • 2025-09-16 06:18:58 • © Вано 2025</footer>
+  <footer>Версия сборки: v007• 2025-09-15 23:32:31 (MSK) • © Вано 2025</footer>
 
+  <script src="script.js?v007"></script>
   <script>
-  const UNIT_PM = 'п.м.';
-
+  // Данные — MAIN и EXTRA
   const MAIN = [
-    { name:'Монтаж настенного кондиционера 07–12 BTU (пуско‑наладка)', unit:'компл.', price:12000 }
+    { name:'Монтаж настенного кондиционера 07-09 BTU', unit:'компл.', price:12000 },
+    { name:'Монтаж настенного кондиционера 12 BTU', unit:'компл.', price:14000 },
+    { name:'Монтаж настенного кондиционера 18 BTU', unit:'компл.', price:16000 }
   ];
-
   const EXTRA = [
-    { name:'Штроба в бетоне', unit:UNIT_PM, price:2500 },
-    { name:'Штроба в кирпиче', unit:UNIT_PM, price:1500 },
-    { name:'Штроба под дренаж в бетоне', unit:UNIT_PM, price:800 },
-    { name:'Штроба под дренаж в кирпиче', unit:UNIT_PM, price:600 },
+    { name:'Штроба в бетоне', unit:'п.м.', price:2500 },
+    { name:'Штроба в кирпиче', unit:'п.м.', price:1500 },
+    { name:'Штроба под дренаж в бетоне', unit:'п.м.', price:800 },
+    { name:'Штроба под дренаж в кирпиче', unit:'п.м.', price:600 },
     { name:'Пробивка доп. отверстия (ГКЛ и т.п., Ø до 60 мм)', unit:'отв.', price:500 },
     { name:'Установка помпы насоса', unit:'шт.', price:2000 },
     { name:'Пробивка доп. отверстия (бетон, Ø 52 мм)', unit:'отв.', price:2000 },
@@ -69,11 +78,11 @@
     { name:'Демонтаж кондиционера 07–12', unit:'шт.', price:2000 },
     { name:'Демонтаж кондиционера 18–24', unit:'шт.', price:4000 },
     { name:'Демонтаж внутреннего/наружного блока (за каждый)', unit:'блок', price:3000 },
-    { name:'Монтаж внутреннего блока 07–12 (пуско‑наладка)', unit:'блок', price:3500 },
+    { name:'Монтаж внутреннего блока 07–12 (пуско-наладка)', unit:'блок', price:3500 },
     { name:'Работа альпиниста', unit:'услуга', price:5500 },
     { name:'Монтаж наружного блока на вентилируемый фасад', unit:'услуга', price:3500 },
-    { name:'Монтаж дополнительного дренажа без короба', unit:UNIT_PM, price:150 },
-    { name:'Разборка/сборка подвесного потолка', unit:UNIT_PM, price:200 },
+    { name:'Монтаж дополнительного дренажа без короба', unit:'п.м.', price:150 },
+    { name:'Разборка/сборка подвесного потолка', unit:'п.м.', price:200 },
     { name:'Пайка фреоновых труб (за каждую)', unit:'пайка', price:500 },
     { name:'Чистка кондиционера (внутренний и наружный блок)', unit:'компл.', price:2500 },
     { name:'Дозаправка кондиционера фреоном', unit:'кг.', price:6000 },
@@ -86,8 +95,13 @@
     { name:'Разборка стеклопакета', unit:'шт.', price:1000 },
     { name:'Выезд за пределы города (в обе стороны, от г. Чебоксары)', unit:'км.', price:30 }
   ];
-  </script>
 
-  <script src="script.js?v006"></script>
+  // Построение таблиц
+  buildMainWithExtras(MAIN);
+  buildTable('#table-extra', EXTRA);
+  wireCalcInputs();
+  recalc();
+  </script>
+  <script>(function(){var a=document.getElementById('logoLink'); if(!a)return; if(!/\.github\.io$/.test(location.hostname)) a.setAttribute('href','./');})();</script>
 </body>
 </html>
