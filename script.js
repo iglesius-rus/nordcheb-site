@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', initScrollFab);
 
 /* Discount helpers */
 function getDiscountPct(){
-  const el = document.getElementById('discount-input');
+  const el = document.getElementById('discount-field') || document.getElementById('discount-input');
   if (!el) return 0;
   const v = parseFloat(String(el.value).replace(',', '.')) || 0;
   return Math.min(100, Math.max(0, v));
@@ -269,11 +269,11 @@ function downloadPDF(){
 /* ===== Safe layer: robust wiring and discount handling ===== */
 (function(){
   function getDiscountPct(){
-    const el = document.getElementById('discount-input');
-    if (!el) return 0;
-    const v = parseFloat(String(el.value).replace(',', '.')) || 0;
-    return Math.min(100, Math.max(0, v));
-  }
+  const el = document.getElementById('discount-field') || document.getElementById('discount-input');
+  if (!el) return 0;
+  const v = parseFloat(String(el.value).replace(',', '.')) || 0;
+  return Math.min(100, Math.max(0, v));
+}
   function applyDiscountToTotal(total){
     const pct = getDiscountPct();
     const discount = Math.round(total * pct) / 100;
@@ -387,7 +387,8 @@ function downloadPDF(){
     if (btnRe && !btnRe._wired){ btnRe.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); }); btnRe._wired = true; }
     if (btnCp && !btnCp._wired){ btnCp.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); copyEstimateText(); }); btnCp._wired = true; }
     if (btnPdf&& !btnPdf._wired){btnPdf.addEventListener('click', ()=>{ recalcAll(); buildEstimate(); downloadPDF(); }); btnPdf._wired = true; }
-    const disc = document.getElementById('discount-input'); if (disc && !disc._wired){ disc.addEventListener('input', recalcAll); disc._wired = true; }
+    const disc1 = document.getElementById('discount-field'); if (disc1 && !disc1._wired){ disc1.addEventListener('input', recalcAll); disc1._wired = true; }
+const disc = document.getElementById('discount-input'); if (disc && !disc._wired){ disc.addEventListener('input', recalcAll); disc._wired = true; }
   }
   document.addEventListener('DOMContentLoaded', ()=>{ wire(); recalcAll(); });
   const mo = new MutationObserver(()=> wire());
