@@ -1,4 +1,4 @@
-/* Аккордеон */
+/* Аккордеон: чистая версия */
 function setMaxHeight(el, open){ el.style.maxHeight = open ? (el.scrollHeight + 'px') : '0px'; }
 function scrollToPanel(panel){ try{ panel.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }
 function saveState(){
@@ -13,7 +13,7 @@ function restoreState(){
     openIds.forEach(id=>{
       const panel = document.getElementById(id);
       if(panel){
-        const btn = panel.parentElement?.querySelector('.menu-btn');
+        const btn = panel.parentElement && panel.parentElement.querySelector ? panel.parentElement.querySelector('.menu-btn') : null;
         panel.classList.add('open');
         setMaxHeight(panel, true);
         if(btn) btn.setAttribute('aria-expanded','true');
@@ -40,7 +40,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('resize', () => {
-  document.querySelectorAll('.content-section.open').forEach(panel => {
-    setMaxHeight(panel, true);
-  });
+  document.querySelectorAll('.content-section.open').forEach(panel => setMaxHeight(panel, true));
 });
