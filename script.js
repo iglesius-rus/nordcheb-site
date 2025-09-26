@@ -1,4 +1,4 @@
-/* Аккордеон + калькулятор мощности */
+/* Аккордеон + расчёт мощности */
 function setMaxHeight(el, open){ el.style.maxHeight = open ? (el.scrollHeight + 'px') : '0px'; }
 function scrollToPanel(panel){ try{ panel.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }
 function saveState(){
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   restoreState();
 
-  // Калькулятор
+  // Расчёт мощности
   const sq = document.getElementById('sqInput');
   const h = document.getElementById('hInput');
   const btn = document.getElementById('calcBtn');
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       out.textContent = 'Введите корректные значения площади и высоты.';
       return;
     }
-    // 35 Вт на 1 м³
+    // базовая оценка: 35 Вт на 1 м³
     const kW = S * H * 0.035;
     const BTU = kW * 3412;
     out.innerHTML = '<b>Необходимая мощность:</b> ' + fmt(kW) + ' кВт · ' + Math.round(BTU).toLocaleString('ru-RU') + ' BTU';
@@ -67,4 +67,4 @@ window.addEventListener('resize', () => {
   document.querySelectorAll('.content-section.open').forEach(panel => setMaxHeight(panel, true));
 });
 
-/* v1.109 */
+/* v1.110 */
