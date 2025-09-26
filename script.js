@@ -1,8 +1,5 @@
-// Тема
-var themeBtn=document.getElementById('theme-toggle'); if(themeBtn){ themeBtn.addEventListener('click',()=>{document.body.classList.toggle('dark'); try{localStorage.setItem('theme', document.body.classList.contains('dark')?'dark':'light');}catch(e){} }); }
-  try { localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); } catch(e){}
-});
-/* forced dark theme *//* Аккордеон */
+/* Тема отключена. По умолчанию тёмная. */
+/* Аккордеон */
 function setMaxHeight(el, open) { if (open) el.style.maxHeight = el.scrollHeight + 'px'; else el.style.maxHeight = '0px'; }
 function scrollToPanel(panel){ panel.scrollIntoView({ behavior:'smooth', block:'start' }); }
 function saveState(){ try { const openIds = Array.from(document.querySelectorAll('.content-section.open')).map(p => p.id); localStorage.setItem('openPanels', JSON.stringify(openIds)); } catch(e){} }
