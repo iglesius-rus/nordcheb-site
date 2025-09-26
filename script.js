@@ -43,4 +43,4 @@ window.addEventListener('resize', () => {
   document.querySelectorAll('.content-section.open').forEach(panel => setMaxHeight(panel, true));
 });
 
-/* v1.107 */
+/* v1.108 */

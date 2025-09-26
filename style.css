@@ -40,7 +40,7 @@ p, li { font-size: clamp(15px, 3.6vw, 18px); }
   max-width: 980px;
   padding: 14px 18px;
   background: #252525;
-  border-left: 4px solid #1e90ff;
+  border-left: 4px solid #3a3a3a; /* нейтральный цвет, без синего */
   border-radius: 10px;
   font-size: 14px;
   opacity: 0.9;
@@ -59,4 +59,4 @@ p, li { font-size: clamp(15px, 3.6vw, 18px); }
 .hidden{ display:none !important; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
-/* v1.107 */
+/* v1.108 */
