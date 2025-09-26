@@ -1,4 +1,4 @@
-/* Аккордеон: чистая версия */
+/* Аккордеон: чистая версия, без калькуляторов и тем */
 function setMaxHeight(el, open){ el.style.maxHeight = open ? (el.scrollHeight + 'px') : '0px'; }
 function scrollToPanel(panel){ try{ panel.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }
 function saveState(){
