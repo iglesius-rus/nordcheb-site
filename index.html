@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nord Чеб — монтаж и сервис кондиционеров</title>
-  <link rel="stylesheet" href="style.css?v1.108">
+  <link rel="stylesheet" href="style.css?v1.109">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -77,6 +77,30 @@
         <h3>Чем отличается On/Off от инверторного кондиционера?</h3>
         <p><b>On/Off:</b> ⚡ работает в режиме «вкл/выкл», компрессор запускается на полную мощность и выключается при достижении температуры. Дешевле, но менее экономично и шумнее.</p>
         <p><b>Инвертор:</b> 🎚️ плавно регулирует мощность, поддерживает стабильную температуру, работает тише, экономичнее и служит дольше.</p>
+      </section>
+    </div>
+
+    <div class="acc-item">
+      <button class="menu-btn" aria-expanded="false" aria-controls="calc">Калькулятор мощности</button>
+      <section class="content-section" id="calc" role="region" aria-labelledby="calc-title">
+        <h2 id="calc-title">Калькулятор мощности</h2>
+        <p class="kicker">Введите площадь и высоту потолка. Результат появится ниже.</p>
+        <form class="calc-form" onsubmit="return false;">
+          <div class="calc-grid">
+            <label class="calc-field">
+              <span>Площадь, м²</span>
+              <input id="sqInput" type="number" inputmode="decimal" min="1" step="0.1" placeholder="например, 18">
+            </label>
+            <label class="calc-field">
+              <span>Высота потолка, м</span>
+              <input id="hInput" type="number" inputmode="decimal" min="2" step="0.1" placeholder="например, 2.7">
+            </label>
+          </div>
+          <div class="calc-actions">
+            <button id="calcBtn" type="button" class="btn-primary">Рассчитать</button>
+          </div>
+        </form>
+        <div id="calcResult" class="calc-result" aria-live="polite"></div>
       </section>
     </div>
 
@@ -155,8 +179,8 @@
     <p>Сайт (электронная визитка) находится в разработке, внешний вид и содержание могут меняться. Спасибо за понимание.</p>
   </div>
 
-  <script src="script.js?v1.108"></script>
+  <script src="script.js?v1.109"></script>
 
-  <footer><small>Версия сборки v1.108</small></footer>
+  <footer><small>Версия сборки v1.109</small></footer>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* Аккордеон: без калькуляторов и тем */
+/* Аккордеон + калькулятор мощности */
 function setMaxHeight(el, open){ el.style.maxHeight = open ? (el.scrollHeight + 'px') : '0px'; }
 function scrollToPanel(panel){ try{ panel.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }
 function saveState(){
@@ -37,10 +37,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   restoreState();
+
+  // Калькулятор
+  const sq = document.getElementById('sqInput');
+  const h = document.getElementById('hInput');
+  const btn = document.getElementById('calcBtn');
+  const out = document.getElementById('calcResult');
+
+  function fmt(num, digits=2){ return Number(num).toFixed(digits).replace('.', ','); }
+
+  function calc(){
+    const S = parseFloat((sq && sq.value || '').replace(',', '.'));
+    const H = parseFloat((h && h.value || '').replace(',', '.'));
+    if(!S || !H || S <= 0 || H <= 0){
+      out.textContent = 'Введите корректные значения площади и высоты.';
+      return;
+    }
+    // 35 Вт на 1 м³
+    const kW = S * H * 0.035;
+    const BTU = kW * 3412;
+    out.innerHTML = '<b>Необходимая мощность:</b> ' + fmt(kW) + ' кВт · ' + Math.round(BTU).toLocaleString('ru-RU') + ' BTU';
+  }
+
+  if(btn){ btn.addEventListener('click', calc); }
+  [sq,h].forEach(i => i && i.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); } }));
 });
 
 window.addEventListener('resize', () => {
   document.querySelectorAll('.content-section.open').forEach(panel => setMaxHeight(panel, true));
 });
 
-/* v1.108 */
+/* v1.109 */
