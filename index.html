@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="dark" lang="ru">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,8 +14,7 @@
     <a class="logo-link" id="logoLink" href="/nordcheb-site/">
       <img src="logo.png" alt="Nord Чеб" class="logo">
     </a>
-    
-  </header>
+    </header>
 
   <main class="accordion">
     <div class="acc-item">
@@ -146,7 +145,32 @@
       </section>
     </div>
 
-    
+    <div class="acc-item">
+      <button class="menu-btn" aria-expanded="false" aria-controls="powercalc">Калькулятор мощности</button>
+      <section class="content-section" id="powercalc" role="region" aria-labelledby="powercalc-title">
+        <h2 id="powercalc-title">Калькулятор мощности кондиционера</h2>
+        <p class="kicker">💡 Быстрый расчёт по площади и высоте потолка.</p>
+        <div class="container" style="padding:14px">
+          <div class="pc-grid" style="display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;">
+            <label>Площадь помещения, м²
+              <input id="pc-area" type="number" inputmode="decimal" min="0" step="0.1" placeholder="например, 18">
+            </label>
+            <label>Высота потолка, м
+              <input id="pc-height" type="number" inputmode="decimal" min="2.2" step="0.1" placeholder="например, 2.7">
+            </label>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+            <button id="pc-run" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;">Рассчитать</button>
+            <button id="pc-clear" class="menu-btn" style="width:auto;display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#6c757d,#9aa3ab);">Сброс</button>
+          </div>
+          <div id="pc-result" class="container" style="margin-top:12px;display:none;">
+            <h3 style="margin-top:0">Результат</h3>
+            <div id="pc-summary"></div>
+            <div class="kicker" style="margin-top:8px">Подсказка: ориентир — ~1 кВт холода на 10 м² при высоте 2.7 м. При иных высотах расчёт масштабируется пропорционально.</div>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <div class="acc-item">
       <button class="menu-btn" aria-expanded="false" aria-controls="contacts">Контакты</button>
@@ -156,13 +180,14 @@
         <div class="contacts">
           <p>Телефон: <a href="tel:+79519977865">+7&nbsp;951&nbsp;997&nbsp;78&nbsp;65</a></p>
           <p>WhatsApp: <a href="https://wa.me/79519977865">написать</a></p>
-          <p>Telegram: <a href="https://t.me/NordCheb">@NordCheb</a></p>
+          <p>Telegram: <a href="https://t.me/Split_Master_21">@Split_Master_21</a></p>
+          <p>Авито: <a href="https://www.avito.ru/user/9ce727721f29a427310e7198652c61d3/profile?src=sharing" target="_blank" rel="noopener">Профиль на Авито</a></p>
         </div>
       </section>
     </div>
   </main>
 
-  <footer>Версия сборки: 16.09.2025-024//12:04:33<br><small>Версия сборки v1.096</small></footer>
+  <footer><small>Версия сборки v1.097</small></footer>
 
   <script src="script.js?v024"></script>
   <script>(function(){var a=document.getElementById('logoLink'); if(!a)return; if(!/\.github\.io$/.test(location.hostname)) a.setAttribute('href','./');})();</script>
