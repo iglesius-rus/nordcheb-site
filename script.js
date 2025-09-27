@@ -1,39 +1,70 @@
-/* Аккордеон: простая, без зависимостей */
-function setMaxHeight(el, open){ el.style.maxHeight = open ? el.scrollHeight + 'px' : '0px'; }
+/* Аккордеон + калькулятор мощности */
+function setMaxHeight(el, open){ el.style.maxHeight = open ? (el.scrollHeight + 'px') : '0px'; }
 function scrollToPanel(panel){ try{ panel.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }
-
-document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('.acc-item').forEach(function(item){
-    var btn = item.querySelector('.menu-btn');
-    var panel = item.querySelector('.content-section');
-    if(!btn || !panel) return;
-    btn.addEventListener('click', function(){
-      var isOpen = btn.getAttribute('aria-expanded') === 'true';
-      document.querySelectorAll('.acc-item .menu-btn[aria-expanded="true"]').forEach(function(b){
-        b.setAttribute('aria-expanded','false');
-      });
-      document.querySelectorAll('.acc-item .content-section').forEach(function(p){ setMaxHeight(p, false); });
-      if(!isOpen){
-        btn.setAttribute('aria-expanded','true');
+function saveState(){
+  try{
+    const openIds = Array.from(document.querySelectorAll('.content-section.open')).map(p=>p.id).filter(Boolean);
+    localStorage.setItem('openPanels', JSON.stringify(openIds));
+  }catch(e){}
+}
+function restoreState(){
+  try{
+    const openIds = JSON.parse(localStorage.getItem('openPanels')||'[]');
+    openIds.forEach(id=>{
+      const panel = document.getElementById(id);
+      if(panel){
+        const btn = panel.parentElement && panel.parentElement.querySelector ? panel.parentElement.querySelector('.menu-btn') : null;
+        panel.classList.add('open');
         setMaxHeight(panel, true);
-        scrollToPanel(panel);
+        if(btn) btn.setAttribute('aria-expanded','true');
       }
     });
-    // Начальное состояние
-    btn.setAttribute('aria-expanded','false');
-    setMaxHeight(panel, false);
+  }catch(e){}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.acc-item').forEach(item => {
+    const btn = item.querySelector('.menu-btn');
+    const panel = item.querySelector('.content-section');
+    if(!btn || !panel) return;
+    setMaxHeight(panel, panel.classList.contains('open') || btn.getAttribute('aria-expanded')==='true');
+    btn.addEventListener('click', () => {
+      const isOpen = panel.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      setMaxHeight(panel, isOpen);
+      saveState();
+      if(isOpen) scrollToPanel(panel);
+    });
   });
-  // Авто-открытие первого раздела
-  var first = document.querySelector('.acc-item .menu-btn');
-  if(first){
-    first.click();
+  restoreState();
+
+  // Калькулятор
+  const sq = document.getElementById('sqInput');
+  const h = document.getElementById('hInput');
+  const btn = document.getElementById('calcBtn');
+  const out = document.getElementById('calcResult');
+
+  function fmt(num, digits=2){ return Number(num).toFixed(digits).replace('.', ','); }
+
+  function calc(){
+    const S = parseFloat((sq && sq.value || '').replace(',', '.'));
+    const H = parseFloat((h && h.value || '').replace(',', '.'));
+    if(!S || !H || S <= 0 || H <= 0){
+      out.textContent = 'Введите корректные значения площади и высоты.';
+      return;
+    }
+    // 35 Вт на 1 м³
+    const kW = S * H * 0.035;
+    const BTU = kW * 3412;
+    out.innerHTML = '<b>Необходимая мощность:</b> ' + fmt(kW) + ' кВт · ' + Math.round(BTU).toLocaleString('ru-RU') + ' BTU';
   }
+
+  if(btn){ btn.addEventListener('click', calc); }
+  [sq,h].forEach(i => i && i.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); } }));
 });
 
-window.addEventListener('resize', function(){
-  document.querySelectorAll('.content-section').forEach(function(panel){
-    if(panel && panel.style.maxHeight && panel.style.maxHeight !== '0px'){
-      panel.style.maxHeight = panel.scrollHeight + 'px';
-    }
-  });
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.content-section.open').forEach(panel => setMaxHeight(panel, true));
 });
+
+/* v1.109 */
