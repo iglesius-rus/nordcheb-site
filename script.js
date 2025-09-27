@@ -1,21 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('calcBtn');
-  const sq = document.getElementById('sqInput');
-  const h = document.getElementById('hInput');
-  const out = document.getElementById('calcResult');
+/* Аккордеон: простая, без зависимостей */
+function setMaxHeight(el, open){ el.style.maxHeight = open ? el.scrollHeight + 'px' : '0px'; }
+function scrollToPanel(panel){ try{ panel.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }
 
-  function fmt(num, digits=2){ return Number(num).toFixed(digits).replace('.', ','); }
-
-  function calc(){
-    const S = parseFloat((sq.value||'').replace(',', '.'));
-    const H = parseFloat((h.value||'').replace(',', '.'));
-    if(!S || !H || S<=0 || H<=0){ out.textContent='Введите корректные значения площади и высоты.'; return; }
-    const kW = S * H * 35 * 1.2 / 1000;
-    const BTU = kW * 3412;
-    out.innerHTML = '<b>Необходимая мощность:</b> ' + fmt(kW) + ' кВт · ' + Math.round(BTU).toLocaleString('ru-RU') + ' BTU/h';
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.acc-item').forEach(function(item){
+    var btn = item.querySelector('.menu-btn');
+    var panel = item.querySelector('.content-section');
+    if(!btn || !panel) return;
+    btn.addEventListener('click', function(){
+      var isOpen = btn.getAttribute('aria-expanded') === 'true';
+      document.querySelectorAll('.acc-item .menu-btn[aria-expanded="true"]').forEach(function(b){
+        b.setAttribute('aria-expanded','false');
+      });
+      document.querySelectorAll('.acc-item .content-section').forEach(function(p){ setMaxHeight(p, false); });
+      if(!isOpen){
+        btn.setAttribute('aria-expanded','true');
+        setMaxHeight(panel, true);
+        scrollToPanel(panel);
+      }
+    });
+    // Начальное состояние
+    btn.setAttribute('aria-expanded','false');
+    setMaxHeight(panel, false);
+  });
+  // Авто-открытие первого раздела
+  var first = document.querySelector('.acc-item .menu-btn');
+  if(first){
+    first.click();
   }
-
-  if(btn){ btn.addEventListener('click', calc); }
-  [sq,h].forEach(i => i && i.addEventListener('keypress', e=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); }}));
 });
-/* v1.111 */
+
+window.addEventListener('resize', function(){
+  document.querySelectorAll('.content-section').forEach(function(panel){
+    if(panel && panel.style.maxHeight && panel.style.maxHeight !== '0px'){
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    }
+  });
+});
