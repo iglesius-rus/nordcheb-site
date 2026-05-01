@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ЧебКонд — мобильная верстка</title>
+
+  <style>
+    :root {
+      --blue: #0b61c9;
+      --blue-2: #4d7fd0;
+      --dark-blue: #034fb0;
+      --red: #e3212f;
+      --text: #333;
+      --muted: #777;
+      --border: #e8e8e8;
+      --light: #f7f7f7;
+      --green: #2ecc71;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --bottom-height: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: #ececec;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding-bottom: calc(var(--bottom-height) + 24px);
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.14);
+    }
+
+    .search-area {
+      padding: 8px 16px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-form {
+      display: grid;
+      grid-template-columns: 1fr 56px;
+      gap: 8px;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px;
+      font-size: 17px;
+      color: #444;
+      background: #fff;
+      border: 1px solid #dedede;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #888;
+    }
+
+    .search-button {
+      display: grid;
+      place-items: center;
+      height: 44px;
+      color: #fff;
+      background: #000;
+      border-radius: 4px;
+      transition: 0.2s ease;
+    }
+
+    .search-button:active {
+      transform: scale(0.96);
+    }
+
+    .hero {
+      padding: 34px 16px 28px;
+      text-align: center;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 96px;
+      height: 96px;
+    }
+
+    .brand-name {
+      font-size: 54px;
+      line-height: 0.85;
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--blue);
+    }
+
+    .brand-subtitle {
+      margin-top: 6px;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .phones {
+      display: grid;
+      gap: 6px;
+    }
+
+    .phone-link {
+      display: inline-block;
+      font-size: 29px;
+      line-height: 1.15;
+      color: #1253c7;
+      transition: 0.2s ease;
+    }
+
+    .phone-link:active {
+      transform: scale(0.98);
+    }
+
+    .call-anytime {
+      margin-top: 4px;
+      font-size: 18px;
+      color: #666;
+    }
+
+    .menu-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-height: 54px;
+      padding: 0 16px;
+      font-size: 20px;
+      color: #5d5d5d;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .menu-row.catalog {
+      min-height: 58px;
+      color: #fff;
+      background: var(--blue-2);
+      border-bottom: 1px solid #3d70bd;
+    }
+
+    .hamburger {
+      position: relative;
+      width: 22px;
+      height: 16px;
+      flex: 0 0 22px;
+    }
+
+    .hamburger span,
+    .hamburger::before,
+    .hamburger::after {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      content: "";
+      background: currentColor;
+      border-radius: 4px;
+    }
+
+    .hamburger span {
+      top: 6px;
+    }
+
+    .hamburger::before {
+      top: 0;
+    }
+
+    .hamburger::after {
+      bottom: 0;
+    }
+
+    .dropdown {
+      display: grid;
+      grid-template-rows: 0fr;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      transition: grid-template-rows 0.25s ease;
+    }
+
+    .dropdown.active {
+      grid-template-rows: 1fr;
+    }
+
+    .dropdown-inner {
+      min-height: 0;
+    }
+
+    .dropdown-link {
+      display: block;
+      padding: 14px 18px;
+      font-size: 16px;
+      color: #444;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dropdown-link:active {
+      background: #f5f8ff;
+    }
+
+    .slider {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .slides {
+      display: flex;
+      height: 100%;
+      transition: transform 0.45s ease;
+    }
+
+    .slide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+
+    .promo-left,
+    .promo-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .promo-left {
+      background: linear-gradient(145deg, #f1f1f3, #fafafa);
+    }
+
+    .conditioner {
+      position: relative;
+      width: 150px;
+      height: 48px;
+      background: linear-gradient(#fbfdff, #dce6f0);
+      border: 1px solid #cfd8e3;
+      border-radius: 6px 6px 12px 12px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .conditioner::before {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      content: "26°";
+      font-size: 9px;
+      color: #d8e5f0;
+    }
+
+    .conditioner::after {
+      position: absolute;
+      right: 20px;
+      bottom: 8px;
+      left: 20px;
+      height: 2px;
+      content: "";
+      background: #aeb8c2;
+      box-shadow: 0 6px 0 rgba(174, 184, 194, 0.35);
+    }
+
+    .brand-mini {
+      position: absolute;
+      top: 15px;
+      left: 66px;
+      font-size: 7px;
+      color: #333;
+    }
+
+    .promo-title {
+      position: absolute;
+      top: 26px;
+      right: 12px;
+      left: 12px;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.15;
+      font-weight: 800;
+      text-transform: lowercase;
+      color: #333;
+    }
+
+    .promo-text-red {
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      max-width: 96px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.18;
+      font-weight: 800;
+      color: var(--red);
+    }
+
+    .percent {
+      position: absolute;
+      right: 14px;
+      bottom: 8px;
+      font-size: 78px;
+      line-height: 0.85;
+      font-weight: 900;
+      letter-spacing: -8px;
+      color: var(--red);
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.22);
+    }
+
+    .zero {
+      position: absolute;
+      right: 60px;
+      bottom: 24px;
+      width: 62px;
+      height: 88px;
+      border-radius: 50%;
+      border: 18px solid #e8e8e8;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .slide.second {
+      grid-template-columns: 1fr;
+      background: linear-gradient(135deg, #eaf3ff, #ffffff);
+    }
+
+    .slide.second .sale {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .sale strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 24px;
+      color: var(--blue);
+    }
+
+    .sale span {
+      font-size: 16px;
+      color: #555;
+    }
+
+    .dots {
+      position: absolute;
+      right: 52px;
+      bottom: 8px;
+      display: flex;
+      gap: 4px;
+      z-index: 3;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      background: #fff;
+      border: 2px solid #777;
+      border-radius: 50%;
+      opacity: 0.9;
+    }
+
+    .dot.active {
+      background: #777;
+    }
+
+    .features {
+      padding: 26px 20px 10px;
+      background: #fff;
+    }
+
+    .feature {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 18px;
+      padding: 0 0 26px;
+    }
+
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      color: #1554e8;
+    }
+
+    .feature-title {
+      margin-bottom: 8px;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .feature-text {
+      font-size: 18px;
+      line-height: 1.45;
+      color: #777;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .bottom-inner {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      width: 100%;
+      max-width: 430px;
+      height: var(--bottom-height);
+      background: rgba(255, 255, 255, 0.96);
+      border-top: 1px solid #e5e5e5;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      pointer-events: auto;
+      backdrop-filter: blur(10px);
+    }
+
+    .bottom-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #0d4ed4;
+      border-right: 1px solid #ededed;
+    }
+
+    .bottom-item:last-child {
+      border-right: 0;
+    }
+
+    .bottom-icon {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    .bottom-count {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .float-call {
+      position: fixed;
+      right: max(18px, calc((100vw - 430px) / 2 + 18px));
+      bottom: 42px;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      width: 82px;
+      height: 82px;
+      color: #fff;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 14px rgba(46, 204, 113, 0.22),
+        0 0 0 25px rgba(46, 204, 113, 0.12),
+        var(--shadow);
+      animation: pulse 1.8s infinite;
+    }
+
+    .float-call svg {
+      width: 34px;
+      height: 34px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 3;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow:
+          0 0 0 0 rgba(46, 204, 113, 0.32),
+          0 0 0 14px rgba(46, 204, 113, 0.18),
+          var(--shadow);
+      }
+
+      70% {
+        box-shadow:
+          0 0 0 18px rgba(46, 204, 113, 0),
+          0 0 0 30px rgba(46, 204, 113, 0),
+          var(--shadow);
+      }
+
+      100% {
+        box-shadow:
+          0 0 0 0 rgba(46, 204, 113, 0),
+          0 0 0 14px rgba(46, 204, 113, 0.18),
+          var(--shadow);
+      }
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 136px;
+      left: 16px;
+      z-index: 50;
+      max-width: 398px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      text-align: center;
+      font-size: 15px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.86);
+      border-radius: 10px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 380px) {
+      .brand-name {
+        font-size: 48px;
+      }
+
+      .phone-link {
+        font-size: 25px;
+      }
+
+      .feature-title {
+        font-size: 20px;
+      }
+
+      .feature-text {
+        font-size: 16px;
+      }
+
+      .float-call {
+        width: 74px;
+        height: 74px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="search-area">
+      <form class="search-form" id="searchForm">
+        <input
+          class="search-input"
+          id="searchInput"
+          type="search"
+          placeholder="Найти товары"
+          autocomplete="off"
+        />
+
+        <button class="search-button" type="submit" aria-label="Поиск">
+          <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10.7 4a6.7 6.7 0 0 1 5.32 10.77l3.6 3.6a1.05 1.05 0 0 1-1.49 1.49l-3.6-3.6A6.7 6.7 0 1 1 10.7 4Zm0 2.1a4.6 4.6 0 1 0 0 9.2 4.6 4.6 0 0 0 0-9.2Z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <section class="hero">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 120 120" aria-hidden="true">
+          <g fill="none" stroke-linecap="square" stroke-width="7">
+            <path d="M60 14v34" stroke="#0b73c9"/>
+            <path d="M60 72v34" stroke="#0b73c9"/>
+            <path d="M21 37l29 17" stroke="#0b73c9"/>
+            <path d="M70 66l29 17" stroke="#0b73c9"/>
+            <path d="M99 37L70 54" stroke="#0b73c9"/>
+            <path d="M50 66L21 83" stroke="#0b73c9"/>
+
+            <path d="M45 22v22" stroke="#0b73c9"/>
+            <path d="M75 22v22" stroke="#0b73c9"/>
+            <path d="M45 76v22" stroke="#0b73c9"/>
+            <path d="M75 76v22" stroke="#0b73c9"/>
+
+            <path d="M29 29l20 12" stroke="#e3212f"/>
+            <path d="M20 48l20 12" stroke="#e3212f"/>
+            <path d="M80 60l20 12" stroke="#0b73c9"/>
+            <path d="M71 79l20 12" stroke="#0b73c9"/>
+          </g>
+        </svg>
+
+        <div>
+          <div class="brand-name">ЧебКонд</div>
+          <div class="brand-subtitle">Продажа и установка кондиционеров</div>
+        </div>
+      </div>
+
+      <div class="phones">
+        <a class="phone-link" href="tel:+79674733604">+7 (967) 473-36-04</a>
+        <a class="phone-link" href="tel:+79530101518">+7 (953) 010-15-18</a>
+        <div class="call-anytime">Звоните в любое время</div>
+      </div>
+    </section>
+
+    <button class="menu-row" type="button" data-toggle="mainMenu">
+      <span class="hamburger"><span></span></span>
+      <span>Меню</span>
+    </button>
+
+    <nav class="dropdown" id="mainMenu">
+      <div class="dropdown-inner">
+        <a class="dropdown-link" href="#">Главная</a>
+        <a class="dropdown-link" href="#">О компании</a>
+        <a class="dropdown-link" href="#">Доставка</a>
+        <a class="dropdown-link" href="#">Контакты</a>
+      </div>
+    </nav>
+
+    <button class="menu-row catalog" type="button" data-toggle="catalogMenu">
+      <span class="hamburger"><span></span></span>
+      <span>Каталог</span>
+    </button>
+
+    <nav class="dropdown" id="catalogMenu">
+      <div class="dropdown-inner">
+        <a class="dropdown-link" href="#">Настенные кондиционеры</a>
+        <a class="dropdown-link" href="#">Инверторные кондиционеры</a>
+        <a class="dropdown-link" href="#">Мульти-сплит системы</a>
+        <a class="dropdown-link" href="#">Монтаж и обслуживание</a>
+      </div>
+    </nav>
+
+    <section class="slider" aria-label="Акции">
+      <div class="slides" id="slides">
+        <article class="slide">
+          <div class="promo-left">
+            <div class="conditioner">
+              <span class="brand-mini">Haier</span>
+            </div>
+          </div>
+
+          <div class="promo-right">
+            <div class="promo-title">кондиционеры в рассрочку</div>
+            <div class="promo-text-red">до 6-ти месяцев без переплат</div>
+            <div class="zero"></div>
+            <div class="percent">%</div>
+          </div>
+        </article>
+
+        <article class="slide second">
+          <div class="sale">
+            <div>
+              <strong>Монтаж под ключ</strong>
+              <span>Подбор, доставка и установка кондиционеров по Чувашии</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="dots" id="sliderDots">
+        <button class="dot active" type="button" aria-label="Слайд 1"></button>
+        <button class="dot" type="button" aria-label="Слайд 2"></button>
+      </div>
+    </section>
+
+    <section class="features">
+      <article class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+            <path
+              d="M7 18h34v25H7V18Zm36 9h8l6 8v8H43V27ZM15 47a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm34 0a5 5 0 1 0 0-10 5 5 0 0 0 0 10ZM7 43h3m10 0h24m10 0h3"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <h2 class="feature-title">Доставка по Чувашии</h2>
+          <p class="feature-text">Мы гарантируем самые низкие цены на доставку товаров</p>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+            <path
+              d="M32 6 9 16v16c0 14.7 9.9 22.9 23 27 13.1-4.1 23-12.3 23-27V16L32 6Zm0 8 15 6v12c0 9.8-5.7 16.3-15 19.8C22.7 48.3 17 41.8 17 32V20l15-6Zm-3 25L19 29l4.3-4.3L29 30.4l12.7-12.7L46 22 29 39Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <h2 class="feature-title">Гарантия качества</h2>
+          <p class="feature-text">Работаем с надежными брендами и выполняем аккуратный монтаж</p>
+        </div>
+      </article>
+    </section>
+
+    <a class="float-call" href="tel:+79674733604" aria-label="Позвонить">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <path
+          d="M28.8 31.8c-10.7 0-20.6-9.8-20.6-20.6 0-1.3.9-2.4 2.2-2.6l5-.8c1.1-.2 2.2.5 2.5 1.6l1.5 4.7c.3.9 0 1.9-.7 2.5l-2.2 1.9c1.5 3.1 4 5.6 7.1 7.1l1.9-2.2c.6-.7 1.6-1 2.5-.7l4.7 1.5c1.1.4 1.8 1.4 1.6 2.5l-.8 5c-.3 1.2-1.4 2.1-2.7 2.1Z"
+        />
+      </svg>
+    </a>
+
+    <nav class="bottom-bar" aria-label="Нижнее меню">
+      <div class="bottom-inner">
+        <a class="bottom-item" href="#" aria-label="Избранное">
+          <svg class="bottom-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s-7.5-4.5-10-9.3C-.2 7.6 2.3 3.5 6.8 3.5c2.2 0 3.7 1.1 5.2 2.8 1.5-1.7 3-2.8 5.2-2.8 4.5 0 7 4.1 4.8 8.2C19.5 16.5 12 21 12 21Z"/>
+          </svg>
+          <span class="bottom-count">0</span>
+        </a>
+
+        <a class="bottom-item" href="#" aria-label="Сравнение">
+          <svg class="bottom-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20h17v2H2V3h2v17Zm3-2V9h3v9H7Zm5 0V4h3v14h-3Zm5 0v-7h3v7h-3Z"/>
+          </svg>
+          <span class="bottom-count">0</span>
+        </a>
+
+        <a class="bottom-item" href="#" aria-label="История">
+          <svg class="bottom-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13 3a9 9 0 1 1-8.5 12H7a6.7 6.7 0 1 0 1.5-7.1L11 10.4H4V3.3l2.7 2.8A8.9 8.9 0 0 1 13 3Zm1 4v5.2l4 2.4-1.1 1.8-5-3V7h2.1Z"/>
+          </svg>
+          <span class="bottom-count">0</span>
+        </a>
+
+        <a class="bottom-item" href="#" aria-label="Корзина">
+          <svg class="bottom-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM6.2 6l1.1 8h9.9l2.2-8H6.2ZM5.8 4h16.3l-3.4 12H6L4.8 4H2V2h4.5l-.7 2Z"/>
+          </svg>
+          <span class="bottom-count">0</span>
+        </a>
+
+        <a class="bottom-item" href="#" aria-label="Профиль">
+          <svg class="bottom-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.7 0-8.5 2.4-8.5 5.4V22h17v-2.6c0-3-3.8-5.4-8.5-5.4Z"/>
+          </svg>
+        </a>
+      </div>
+    </nav>
+
+    <div class="toast" id="toast">Сообщение</div>
+  </main>
+
+  <script>
+    const toggleButtons = document.querySelectorAll("[data-toggle]");
+    const slides = document.getElementById("slides");
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const toast = document.getElementById("toast");
+
+    let currentSlide = 0;
+    let toastTimer = 0;
+    let sliderTimer = 0;
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      toastTimer = window.setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+
+    function closeOtherDropdowns(activeId) {
+      document.querySelectorAll(".dropdown").forEach((dropdown) => {
+        if (dropdown.id !== activeId) {
+          dropdown.classList.remove("active");
+        }
+      });
+    }
+
+    toggleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const targetId = button.dataset.toggle;
+        const target = document.getElementById(targetId);
+
+        if (!target) return;
+
+        const shouldOpen = !target.classList.contains("active");
+        closeOtherDropdowns(targetId);
+        target.classList.toggle("active", shouldOpen);
+      });
+    });
+
+    function setSlide(index) {
+      currentSlide = (index + dots.length) % dots.length;
+      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+      dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle("active", dotIndex === currentSlide);
+      });
+    }
+
+    function startSlider() {
+      clearInterval(sliderTimer);
+      sliderTimer = window.setInterval(() => {
+        setSlide(currentSlide + 1);
+      }, 4200);
+    }
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        setSlide(index);
+        startSlider();
+      });
+    });
+
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = searchInput.value.trim();
+
+      if (!query) {
+        showToast("Введите запрос для поиска");
+        return;
+      }
+
+      showToast(`Ищем: ${query}`);
+    });
+
+    document.querySelectorAll('a[href="#"]').forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        showToast("Это демо-экран. Ссылки пока не подключены.");
+      });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        clearInterval(sliderTimer);
+      } else {
+        startSlider();
+      }
+    });
+
+    startSlider();
+  </script>
+</body>
+</html>
