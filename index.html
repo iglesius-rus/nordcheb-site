@@ -1,186 +1,539 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nord Чеб — монтаж и сервис кондиционеров</title>
-  <link rel="stylesheet" href="style.css?v1.109">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NordЧеб — Монтаж кондиционеров</title>
+
+  <style>
+    :root {
+      --bg: #1d171f;
+      --card: #171119;
+      --text: #f4f4f4;
+      --muted: #aaa3ac;
+      --blue: #0878df;
+      --red: #ff1515;
+      --glass: rgba(82, 129, 151, 0.24);
+      --glass-border: rgba(181, 226, 255, 0.65);
+      --green: #071209;
+      --shadow: rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(30, 39, 50, 0.65), transparent 420px),
+        linear-gradient(180deg, #18121b 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    body.light {
+      --bg: #eef3f8;
+      --card: #ffffff;
+      --text: #1c1c1c;
+      --muted: #60646b;
+      --glass: rgba(35, 98, 130, 0.16);
+      --glass-border: rgba(40, 103, 135, 0.45);
+      --green: #dcefe2;
+      --shadow: rgba(0, 0, 0, 0.18);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding-bottom: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .top {
+      position: relative;
+      padding: 18px 16px 14px;
+      text-align: center;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 18px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    .theme-toggle span {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-weight: 900;
+      font-size: clamp(46px, 13vw, 66px);
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .logo .nord {
+      color: #ffffff;
+      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .logo .cheb {
+      margin-left: 8px;
+      padding: 5px 8px 7px;
+      color: #ffffff;
+      border-radius: 7px;
+      background:
+        linear-gradient(100deg, var(--red) 0%, #e71420 36%, var(--blue) 62%, #006ad8 100%);
+      box-shadow: 0 0 16px rgba(0, 120, 255, 0.35);
+    }
+
+    h1 {
+      max-width: 460px;
+      margin: 0 auto;
+      font-size: clamp(23px, 6.1vw, 30px);
+      line-height: 1.18;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      margin: 14px auto 16px;
+      max-width: 430px;
+      color: var(--muted);
+      font-size: clamp(16px, 4.2vw, 19px);
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .dark-line {
+      width: calc(100% + 8px);
+      height: 32px;
+      margin: 4px 0 38px -4px;
+      border-radius: 16px;
+      background: #050c08;
+      border: 1px solid rgba(48, 121, 61, 0.4);
+      box-shadow:
+        inset 0 0 14px rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu {
+      padding: 0 17px;
+      display: grid;
+      gap: 15px;
+    }
+
+    .big-btn,
+    .pill {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 61px;
+      padding: 14px 16px;
+      border-radius: 9px;
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      color: var(--text);
+      text-decoration: none;
+      text-align: center;
+      font-size: clamp(18px, 4.8vw, 22px);
+      font-weight: 800;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.18),
+          rgba(255, 255, 255, 0.03) 35%,
+          rgba(0, 60, 90, 0.18)
+        ),
+        var(--glass);
+      box-shadow:
+        inset 0 0 18px rgba(255, 255, 255, 0.08),
+        0 8px 18px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(9px);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .big-btn::before,
+    .pill::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.07) 0,
+          rgba(255, 255, 255, 0.07) 2px,
+          transparent 2px,
+          transparent 12px
+        );
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .big-btn span,
+    .pill span {
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+    }
+
+    .big-btn:active,
+    .pill:active,
+    .float-btn:active {
+      transform: scale(0.97);
+    }
+
+    .contacts-card {
+      margin: 31px 10px 0;
+      padding: 25px 17px 34px;
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: 0 12px 28px var(--shadow);
+    }
+
+    .mini-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 31px;
+    }
+
+    .pill {
+      min-height: 50px;
+      width: auto;
+      padding: 10px 16px;
+      font-size: clamp(17px, 4.3vw, 20px);
+      border-radius: 14px;
+    }
+
+    .contacts-title {
+      margin-bottom: 22px;
+      font-size: clamp(27px, 7vw, 34px);
+      font-weight: 900;
+    }
+
+    .contacts {
+      display: grid;
+      gap: 24px;
+      color: var(--text);
+      font-size: clamp(16px, 4.2vw, 19px);
+      line-height: 1.35;
+    }
+
+    .contacts p {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .contacts strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .contacts a {
+      color: #2296e8;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .floating {
+      position: fixed;
+      right: max(14px, calc((100vw - 520px) / 2 + 14px));
+      bottom: 13px;
+      display: grid;
+      gap: 13px;
+      z-index: 20;
+    }
+
+    .float-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 31px;
+      box-shadow:
+        0 9px 20px rgba(0, 0, 0, 0.38),
+        0 0 0 14px rgba(4, 30, 12, 0.36);
+      transition: transform 0.18s ease;
+    }
+
+    .telegram {
+      background: linear-gradient(135deg, #31b8ff, #0879dc);
+    }
+
+    .chat {
+      background: linear-gradient(135deg, #2ce0ff, #9139ff 65%, #5138ff);
+    }
+
+    .phone {
+      background: linear-gradient(135deg, #30de83, #18a957);
+    }
+
+    .version {
+      margin-top: 27px;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .section {
+      margin: 24px 17px 0;
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section h2 {
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    .section ul {
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .section p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 360px) {
+      .pill {
+        padding-inline: 12px;
+      }
+
+      .float-btn {
+        width: 58px;
+        height: 58px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <header>
-    <a class="logo-link" id="logoLink" href="./">
-      <img src="logo.png" alt="Nord Чеб" class="logo">
-    </a>
-  </header>
+  <main class="page">
+    <header class="top">
+      <button class="theme-toggle" type="button" id="themeToggle" aria-label="Переключить тему">
+        <span>☀️</span>
+        <span>🌙</span>
+      </button>
 
-  <main class="accordion">
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="works">Примеры работ</button>
-      <section class="content-section" id="works" role="region" aria-labelledby="works-title">
-        <h2 id="works-title">Примеры работ</h2>
-        <p class="kicker">📸 Фото и описание выполненных монтажей.</p>
-        <p>Здесь будут фотографии и описание уникальных монтажей: аккуратная прокладка трассы, правильные уклоны дренажа, антивибрационные опоры, герметизация вводов. Раздел в подготовке.</p>
-      </section>
-    </div>
+      <div class="logo" aria-label="NordЧеб">
+        <span class="nord">Nord</span>
+        <span class="cheb">Чеб</span>
+      </div>
 
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="service">Обслуживание кондиционеров</button>
-      <section class="content-section" id="service" role="region" aria-labelledby="service-title">
-        <h2 id="service-title">Обслуживание кондиционеров</h2>
-        <p class="kicker">🛠️ Регламентное обслуживание: чистка, диагностика, контроль герметичности.</p>
+      <h1>Монтаж кондиционеров в Чебоксарах и Новочебоксарске</h1>
 
-        <h3>Зачем обслуживать 1–2 раза в год</h3>
-        <p>🧼 Очистка фильтров и теплообменников повышает эффективность работы и снижает энергопотребление.</p>
-        <p>🧪 Проверка уровня хладагента и технического состояния предотвращает поломки и продлевает срок службы оборудования.</p>
+      <p class="subtitle">
+        Монтаж и установка кондиционера в квартире и доме.<br />
+        Цены, примеры работ и ответы на вопросы.
+      </p>
 
-        <h3>К чему приводит отсутствие обслуживания</h3>
-        <p>🐢 Снижение производительности и рост затрат на электроэнергию.</p>
-        <p>🧯 Риск утечки хладагента и дорогостоящего ремонта.</p>
-        <p>💸 Возможный выход из строя компрессора — самая дорогая поломка.</p>
-        <p>🌬️ Загрязнение внутренних узлов приводит к циркуляции пыли и бактерий, ухудшению качества воздуха в помещении.</p>
-      </section>
-    </div>
+      <div class="dark-line"></div>
+    </header>
 
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="faq">Частые вопросы</button>
-      <section class="content-section" id="faq" role="region" aria-labelledby="faq-title">
-        <h2 id="faq-title">Частые вопросы</h2>
-        <p class="kicker">💡 Подсказки и ответы на самые частые вопросы.</p>
+    <nav class="menu" aria-label="Главное меню">
+      <a href="#price" class="big-btn"><span>Прайс-лист</span></a>
+      <a href="#power" class="big-btn"><span>Подбор мощности кондиционера</span></a>
+      <a href="#works" class="big-btn"><span>Примеры работ</span></a>
+      <a href="#faq" class="big-btn"><span>Частые вопросы / FAQ</span></a>
+      <a href="#service" class="big-btn"><span>Обслуживание кондиционеров</span></a>
+      <a href="#recommendations" class="big-btn"><span>Рекомендации по эксплуатации</span></a>
+      <a href="#route" class="big-btn"><span>Прокладка трассы под кондиционер</span></a>
+      <a href="#breezers" class="big-btn"><span>Бризеры</span></a>
+    </nav>
 
-        <h3>Как выбрать мощность кондиционера: кВт или BTU?</h3>
-        <p>📏 В среднем нужно 1&nbsp;кВт холода на каждые 10&nbsp;м² площади. В BTU: «девятка» (9&nbsp;000&nbsp;BTU) подходит для комнаты до ~25&nbsp;м², «двенадцатая» (12&nbsp;000&nbsp;BTU) — до ~35&nbsp;м², «восемнадцатая» (18&nbsp;000&nbsp;BTU) — до ~50&nbsp;м². Запомнить просто: примерно 1&nbsp;000&nbsp;BTU хватает на 3&nbsp;м² помещения.</p>
+    <section id="price" class="section">
+      <h2>Прайс-лист</h2>
+      <ul>
+        <li>Стандартный монтаж кондиционера — от 8 000 ₽</li>
+        <li>Закладка трассы — от 4 000 ₽</li>
+        <li>Демонтаж кондиционера — от 3 000 ₽</li>
+        <li>Обслуживание кондиционера — от 2 500 ₽</li>
+      </ul>
+    </section>
 
-        <h3>Куда лучше ставить внутренний блок?</h3>
-        <p>🛏️ Не напротив кровати или дивана. Оптимально — над дверью или окном, либо сбоку от зоны отдыха.</p>
+    <section id="power" class="section">
+      <h2>Подбор мощности</h2>
+      <p>
+        Обычно на 10 м² помещения требуется примерно 1 кВт холодопроизводительности.
+        Для солнечной стороны, кухни или последнего этажа мощность лучше брать с запасом.
+      </p>
+    </section>
 
-        <h3>Сколько времени занимает монтаж?</h3>
-        <p>⏱️ При стандартных условиях — 2–4 часа.</p>
+    <section id="works" class="section">
+      <h2>Примеры работ</h2>
+      <p>
+        Здесь можно разместить фотографии установленных кондиционеров,
+        скрытых трасс, наружных блоков и аккуратных подключений.
+      </p>
+    </section>
 
-        <h3>Нужно ли согласование установки?</h3>
-        <p>🏢 Фасады многоквартирных домов относятся к общедомовому имуществу. Если дом с единым архитектурным стилем или строгими требованиями к фасаду, согласование может потребоваться.</p>
+    <section id="faq" class="section">
+      <h2>FAQ</h2>
+      <ul>
+        <li>Сколько длится монтаж? Обычно 2–4 часа.</li>
+        <li>Можно ли установить зимой? Да, при подходящих условиях.</li>
+        <li>Нужна ли розетка рядом? Желательно, но можно обсудить варианты.</li>
+      </ul>
+    </section>
 
-        <h3>Каков срок службы сплит‑системы?</h3>
-        <p>🧰 При правильной установке и регулярном обслуживании — 10–15 лет.</p>
+    <section id="service" class="section">
+      <h2>Обслуживание кондиционеров</h2>
+      <p>
+        Чистка фильтров, мойка внутреннего и наружного блока,
+        проверка дренажа и давления фреона.
+      </p>
+    </section>
 
-        <h3>Нужно ли обслуживать кондиционер каждый год?</h3>
-        <p>✔️ Да. Это поддерживает эффективность, снижает затраты на электроэнергию и предотвращает поломки.</p>
+    <section id="recommendations" class="section">
+      <h2>Рекомендации</h2>
+      <p>
+        Не ставьте температуру слишком низко, регулярно очищайте фильтры
+        и проводите профилактику минимум раз в год.
+      </p>
+    </section>
 
-        <h3>Шумит ли внешний блок и мешает ли соседям?</h3>
-        <p>🔇 Современные модели тихие, уровень шума сравним с уличным фоном. Главное — правильный монтаж и антивибрационные крепления.</p>
+    <section id="route" class="section">
+      <h2>Прокладка трассы</h2>
+      <p>
+        Трассу под кондиционер лучше закладывать до чистовой отделки,
+        чтобы скрыть коммуникации в стене.
+      </p>
+    </section>
 
-        <h3>Можно ли использовать кондиционер для обогрева?</h3>
-        <p>🔥 Да, большинство моделей работают как тепловой насос и греют при температуре до −5…−15&nbsp;°C (в зависимости от серии).</p>
+    <section id="breezers" class="section">
+      <h2>Бризеры</h2>
+      <p>
+        Бризер подает свежий воздух с улицы, фильтрует его и может подогревать
+        в холодное время года.
+      </p>
+    </section>
 
-        <h3>Чем отличается On/Off от инверторного кондиционера?</h3>
-        <p><b>On/Off:</b> ⚡ работает в режиме «вкл/выкл», компрессор запускается на полную мощность и выключается при достижении температуры. Дешевле, но менее экономично и шумнее.</p>
-        <p><b>Инвертор:</b> 🎚️ плавно регулирует мощность, поддерживает стабильную температуру, работает тише, экономичнее и служит дольше.</p>
-      </section>
-    </div>
+    <section class="contacts-card" id="contacts">
+      <nav class="mini-nav">
+        <a href="#service" class="pill"><span>Обслуживание</span></a>
+        <a href="#price" class="pill"><span>Прайс</span></a>
+        <a href="#works" class="pill"><span>Наши работы</span></a>
+        <a href="#power" class="pill"><span>Калькулятор</span></a>
+        <a href="#faq" class="pill"><span>FAQ</span></a>
+      </nav>
 
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="calc">Калькулятор мощности</button>
-      <section class="content-section" id="calc" role="region" aria-labelledby="calc-title">
-        <h2 id="calc-title">Калькулятор мощности</h2>
-        <p class="kicker">Введите площадь и высоту потолка. Результат появится ниже.</p>
-        <form class="calc-form" onsubmit="return false;">
-          <div class="calc-grid">
-            <label class="calc-field">
-              <span>Площадь, м²</span>
-              <input id="sqInput" type="number" inputmode="decimal" min="1" step="0.1" placeholder="например, 18">
-            </label>
-            <label class="calc-field">
-              <span>Высота потолка, м</span>
-              <input id="hInput" type="number" inputmode="decimal" min="2" step="0.1" placeholder="например, 2.7">
-            </label>
-          </div>
-          <div class="calc-actions">
-            <button id="calcBtn" type="button" class="btn-primary">Рассчитать</button>
-          </div>
-        </form>
-        <div id="calcResult" class="calc-result" aria-live="polite"></div>
-      </section>
-    </div>
+      <h2 class="contacts-title">Контакты</h2>
 
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="recommend">Рекомендации по эксплуатации</button>
-      <section class="content-section" id="recommend" role="region" aria-labelledby="rec-title">
-        <h2 id="rec-title">Рекомендации по эксплуатации</h2>
-        <p class="kicker">📋 Практичные советы по работе техники.</p>
+      <div class="contacts">
+        <p>Город Чебоксары</p>
 
-        <h3>Температурный режим</h3>
-        <p>🌡️ Не ставьте разницу между улицей и помещением больше 8–10&nbsp;°C — это снижает нагрузку на технику и полезнее для здоровья. Оптимальная температура летом — 23–25&nbsp;°C.</p>
+        <p>
+          <strong>Телефон:</strong>
+          <a href="tel:+79968504822">+7 996 850-48-22</a>
+        </p>
 
-        <h3>Работа и режимы</h3>
-        <p>🔁 Не включайте и не выключайте кондиционер слишком часто. Используйте режим «Авто» или «Эконом», если он есть — техника сама подбирает оптимальную мощность. Зимой не используйте охлаждение при минусовых температурах снаружи, если модель для этого не предназначена.</p>
+        <p>
+          <strong>Telegram:</strong>
+          <a href="https://t.me/NordChebCalc_Bot" target="_blank" rel="noopener">
+            @NordChebCalc_Bot
+          </a>
+        </p>
 
-        <h3>Фильтры и чистка</h3>
-        <p>🧽 Промывать фильтры внутреннего блока каждые 2–4 недели. Полную профессиональную чистку делать не реже 1 раза в год.</p>
+        <p>
+          <strong>Яндекс:</strong>
+          <a href="#" target="_blank" rel="noopener">профиль</a>
+        </p>
 
-        <h3>Воздушный поток</h3>
-        <p>🍃 Не направляйте поток воздуха прямо на людей. Используйте автораспределение жалюзи для равномерного охлаждения.</p>
+        <p>
+          <strong>Авито:</strong>
+          <a href="#" target="_blank" rel="noopener">Авито</a>
+        </p>
+      </div>
+    </section>
 
-        <h3>Дренаж и влага</h3>
-        <p>💧 Следите, чтобы из дренажной трубки свободно выходил конденсат — при первых признаках подтёков обращайтесь к мастеру.</p>
+    <div class="version">Версия сборки v1.201</div>
 
-        <h3>Электропитание</h3>
-        <p>⚡ Подключайте сплит‑систему через отдельный автомат/УЗО. В домах с нестабильным напряжением используйте стабилизатор.</p>
-
-        <h3>Обслуживание</h3>
-        <p>🛡️ Раз в год вызывайте специалистов для проверки давления хладагента, состояния компрессора и теплообменников.</p>
-      </section>
-    </div>
-
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="price">Прайс‑лист</button>
-      <section class="content-section" id="price" role="region" aria-labelledby="price-title">
-        <h2 id="price-title">Прайс‑лист</h2>
-        <p class="kicker">💰 Базовый монтаж и состав работ.</p>
-        <p><b>Монтаж сплит‑системы — 12&nbsp;000&nbsp;руб.</b></p>
-        <ul>
-          <li>Внутренний и наружный блоки;</li>
-          <li>магистраль — 3&nbsp;м;</li>
-          <li>сверление стены до 40&nbsp;см;</li>
-          <li>вакуумирование;</li>
-          <li>герметизация вводов;</li>
-          <li>подключение и пуск;</li>
-          <li>декоративный короб до 0,5&nbsp;м.</li>
-        </ul>
-        <p class="kicker">🔥 Скидки до <b>20%</b> до <b>31&nbsp;октября&nbsp;2025</b> включительно.</p>
-      </section>
-    </div>
-
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="reviews">Отзывы</button>
-      <section class="content-section" id="reviews" role="region" aria-labelledby="reviews-title">
-        <h2 id="reviews-title">Отзывы</h2>
-        <p class="kicker">⭐ Мнения клиентов о нашей работе.</p>
-        <p>Собираем отзывы клиентов. Раздел в разработке.</p>
-      </section>
-    </div>
-
-    <div class="acc-item">
-      <button class="menu-btn" aria-expanded="false" aria-controls="contacts">Контакты</button>
-      <section class="content-section" id="contacts" role="region" aria-labelledby="contacts-title">
-        <h2 id="contacts-title">Контакты</h2>
-        <p class="kicker">☎️ Быстрая связь.</p>
-        <div class="contacts">
-          <p>Телефон: <a href="tel:+79519977865">+7&nbsp;951&nbsp;997‑78‑65</a></p>
-          <p>Telegram: <a href="https://t.me/Split_Master_21">@Split_Master_21</a></p>
-          <p>Авито: <a href="https://www.avito.ru/user/9ce727721f29a427310e7198652c61d3/profile?src=sharing">профиль</a></p>
-        </div>
-      </section>
-    </div>
+    <aside class="floating" aria-label="Быстрые контакты">
+      <a class="float-btn telegram" href="https://t.me/NordChebCalc_Bot" target="_blank" rel="noopener" aria-label="Telegram">
+        ✈
+      </a>
+      <a class="float-btn chat" href="https://t.me/NordChebCalc_Bot" target="_blank" rel="noopener" aria-label="Чат">
+        ●
+      </a>
+      <a class="float-btn phone" href="tel:+79968504822" aria-label="Позвонить">
+        ☎
+      </a>
+    </aside>
   </main>
 
-  <div class="notice">
-    <p>Сайт (электронная визитка) находится в разработке, внешний вид и содержание могут меняться. Спасибо за понимание.</p>
-  </div>
+  <script>
+    const themeToggle = document.getElementById("themeToggle");
+    const sections = document.querySelectorAll(".section");
+    const navLinks = document.querySelectorAll('a[href^="#"]');
 
-  <script src="script.js?v1.109"></script>
+    const savedTheme = localStorage.getItem("theme");
 
-  <footer><small>Версия сборки v1.109</small></footer>
+    if (savedTheme === "light") {
+      document.body.classList.add("light");
+    }
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+
+      const theme = document.body.classList.contains("light") ? "light" : "dark";
+      localStorage.setItem("theme", theme);
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("href");
+
+        if (!targetId || targetId === "#") return;
+
+        const targetSection = document.querySelector(targetId);
+
+        if (targetSection && targetSection.classList.contains("section")) {
+          sections.forEach((section) => section.classList.remove("active"));
+          targetSection.classList.add("active");
+        }
+      });
+    });
+  </script>
 </body>
 </html>
